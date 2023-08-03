@@ -1,0 +1,1246 @@
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+        <style>
+            /* Dark and comfortable theme. Easy to read */
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                background-color: #222;
+                color: #fff;
+                font-family: 'Lato', sans-serif;
+                font-size: 16px;
+                margin: 0;
+                padding: 0;
+            }
+
+            .content {
+                margin: 0;
+                padding: 0;
+                width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            @media screen and (max-width: 800px) {
+                .content {
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                }
+            }
+
+            h1 {
+                margin: 0;
+                padding: 0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 50px;
+                padding-bottom: 10px;
+                font-family: "playfair display", serif;
+                font-size: 1.5em;
+            }
+
+            pre {
+                margin: 0;
+                padding: 0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                background-color: #222;
+                white-space: pre-wrap;
+                font-family: 'Lato', sans-serif;
+            }
+
+            .options {
+                margin: 0;
+                padding: 0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            button {
+                margin: 0;
+                padding: 0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                background-color: #222;
+                color: #fff;
+                border: 1px solid #fff;
+                width: 100%;
+                display: block;
+                text-align: left;
+                font-family: 'Lato', sans-serif;
+            }
+
+            button:hover {
+                background-color: #666;
+            }
+
+            .inventory {
+                margin: 0;
+                padding: 0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                background-color: #222;
+                color: #fff;
+                border-top: 1px solid #fff;
+                width: 100%;
+                display: none;/*flex;*/
+                flex-direction: column;
+                font-family: 'Lato', sans-serif;
+            }
+
+            .inventory div {
+                margin: 0;
+                padding: 0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-bottom: 10px;
+                background-color: #222;
+                color: #fff;
+                width: 100%;
+                display: block;
+                text-align: left;
+                font-family: 'Lato', sans-serif;
+            }
+
+            .inventory div::before {
+                content: "• ";
+            }
+
+            .restart {
+                width: 70px;
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                text-align: center;
+            }
+
+            .spacer {
+                flex-grow: 1;
+            }
+
+            #text {
+                transition: all 0.3s cubic-bezier(0, 0.2, 0.8, 1);
+            }
+
+            #text.out {
+                opacity: 0;
+                transform: translateY(-20px);
+                pointer-events: none;
+            }
+
+            #text.in {
+                opacity: 0;
+                transform: translateY(20px);
+                pointer-events: none;
+                transition-duration: 0;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <div id="text">
+                <h1 id="header"></h1>
+                <pre id="body"></pre>
+                <div class="options">
+                    <button id="b0" onclick="choose(0)"></button>
+                    <button id="b1" onclick="choose(1)"></button>
+                    <button id="b2" onclick="choose(2)"></button>
+                    <button id="b3" onclick="choose(3)"></button>
+                    <button id="b4" onclick="choose(4)"></button>
+                    <button id="b5" onclick="choose(5)"></button>
+                    <button id="b6" onclick="choose(6)"></button>
+                    <button id="b7" onclick="choose(7)"></button>
+                </div>
+            </div>
+            <div class="spacer"></div>
+            <div id="inventory" class="inventory"></div>
+            <button class="restart" onclick="restart()">Restart</button>
+        </div>
+    </body>
+    <footer>
+        <script type="application/javascript">
+            var buttons, header, body, inventoryDiv, textDiv;
+            var inventory = {};
+            var state;
+            var web;
+
+            window.addEventListener('DOMContentLoaded', () => {
+                buttons = [
+                    document.getElementById("b0"),
+                    document.getElementById("b1"),
+                    document.getElementById("b2"),
+                    document.getElementById("b3"),
+                    document.getElementById("b4"),
+                    document.getElementById("b5"),
+                    document.getElementById("b6"),
+                    document.getElementById("b7")
+                ];
+                header = document.getElementById("header");
+                body = document.getElementById("body");
+                inventoryDiv = document.getElementById("inventory");
+                textDiv = document.getElementById("text");
+                load();
+            });
+
+            function choose(option) {
+                let actions = web[state].options[option].actions.split(",");
+                let newState = state;
+                for (let i = 0; i < actions.length; i++) {
+                    let action = actions[i];
+                    let command = action.substring(0, action.indexOf(":"));
+                    let values = action.substring(action.indexOf(":") + 1).split(";");
+                    if (command == "go") {
+                        newState = values[0];
+                    }
+                    if (command == "add") {
+                        let amount = values.length > 1 ? parseInt(values[1]) : 1;
+                        inventoryAdd(values[0], amount);
+                    }
+                    if (command == "remove") {
+                        let amount = values.length > 1 ? parseInt(values[1]) : 1;
+                        inventoryRemove(values[0], amount);
+                    }
+                    if (command == "set") {
+                        let amount = values.length > 1 ? parseInt(values[1]) : 1;
+                        inventorySet(values[0], amount);
+                    }
+                    if (command == "restart") {
+                        restart();
+                    }
+                }
+                setState(newState); // Refresh UI
+            }
+
+            function inventoryGet(item) {
+                if (inventory[item] == undefined) {
+                    return 0;
+                }
+                return inventory[item];
+            }
+
+            function inventorySet(item, amount) {
+                inventory[item] = amount;
+                console.log(inventory);
+            }
+
+            function inventoryAdd(item, amount) {
+                inventorySet(item, inventoryGet(item) + amount);
+            }
+
+            function inventoryRemove(item, amount) {
+                inventorySet(item, inventoryGet(item) - amount);
+            }
+
+            function evalCondition(conditions) {
+                conditions = conditions.split(",");
+                let results = [];
+                for (let i = 0; i < conditions.length; i++) {
+                    let condition = conditions[i];
+                    let parts = condition.split(" ");
+                    let left = parts[0];
+                    let right = parts[2];
+                    let operator = parts[1];
+                    if (operator == ">") {
+                        results.push(inventoryGet(left) > parseInt(right));
+                    }
+                    else if (operator == "<") {
+                        results.push(inventoryGet(left) < parseInt(right));
+                    }
+                    else if (operator == ">=") {
+                        results.push(inventoryGet(left) >= parseInt(right));
+                    }
+                    else if (operator == "<=") {
+                        results.push(inventoryGet(left) <= parseInt(right));
+                    }
+                    else if (operator == "==") {
+                        results.push(inventoryGet(left) == parseInt(right));
+                    }
+                    else if (operator == "!=") {
+                        results.push(inventoryGet(left) != parseInt(right));
+                    }
+                    else {
+                        throw "Unknown operator: " + operator;
+                    }
+                }
+                return results.reduce((a, b) => a && b);
+            }
+
+            function setState(newState) {
+                state = newState;
+                updateText();
+                if (newState != state) {
+                    fadeOut();
+                }
+                save();
+            }
+
+            function fadeOut() {
+                textDiv.classList.add("out");
+                setTimeout(fadeIn, 300);
+            }
+
+            function fadeIn() {
+                textDiv.classList.remove("out");
+                textDiv.classList.add("in");
+                updateText();
+                setTimeout(fadeIn2, 150);
+            }
+
+            function fadeIn2() {
+                textDiv.classList.remove("in");
+            }
+
+            function updateText() {
+                let stateObj = web[state];
+                header.innerHTML = stateObj.header;
+                body.innerHTML = stateObj.text;
+                // Update buttons and hide unused ones
+                for (let i = 0; i < buttons.length; i++) {
+                    let button = buttons[i];
+                    if (i < stateObj.options.length) {
+                        let option = stateObj.options[i];
+                        button.innerHTML = option.text;
+                        button.style.display = "block";
+                        if (option.condition != undefined) {
+                            button.style.display = evalCondition(option.condition) ? "block" : "none";
+                        }
+                    } else {
+                        button.style.display = "none";
+                    }
+                }
+                // Update inventory
+                inventoryDiv.innerHTML = "";
+                for (let item in inventory) {
+                    let amount = inventoryGet(item);
+                    if (amount == 0) {
+                        continue;
+                    }
+                    let itemDiv = document.createElement("div");
+                    itemDiv.innerHTML = item + ": " + amount;
+                    inventoryDiv.appendChild(itemDiv);
+                }
+            }
+
+            function save() {
+                let save = {
+                    "state": state,
+                    "inventory": inventory
+                };
+                localStorage.setItem("save", JSON.stringify(save));
+                console.log(save)
+            }
+
+            function load() {
+                let save = JSON.parse(localStorage.getItem("save"));
+                console.log(save)
+                if (save != null) {
+                    state = save.state;
+                    inventory = save.inventory;
+                    setState(state);
+                } else {
+                    restart();
+                }
+            }
+
+            function restart() {
+                localStorage.removeItem("save");
+                inventory = {};
+                setState("start");
+            }
+            
+            var web = {
+                "start": {
+                    "header": "You Stand in the Forest",
+                    "text": "\"I know what you are\" I said\n\n\"Say it.\" Edward stared at me, intent on my response \"Out loud.\"",
+                    "options": [
+                        { "text": "\"Vampire\"", "actions": "go:you-are-vampire" },
+                        { "text": "\"A good friend\"", "actions": "remove:edward-reputation,go:you-are-friend" },
+                        { "text": "\"Cedric Diggory\"", "actions": "go:you-are-cedric", "condition": "defiance == 0"  },
+                        { "text": "\"I reaaaly think you're Cedric Diggory\"", "actions": "go:defiant", "condition": "defiance == 1" },
+                        { "text": "\"I still think you're Cedric Diggory\"", "actions": "go:defiant-2", "condition": "defiance == 2" },
+                        { "text": "Leave", "actions": "go:hub" }
+                    ]
+                },
+                "you-are-friend": {
+                    "header": "\"A good friend\"",
+                    "text": "\"What?!\" Edward stammered. \"I saved your life!\"\n\nI shrugged, \"Well... You're great to hang out with and all, but dating?\" I scoffed, \"I'd prefer someone who doesn't match the paleness of my IKEA furniture. Sorry bud.\"\n\n\"I thought you were going to say I'm a cool sexy vampire\" Edward cried out, tears forming in his eyes.",
+                    "options": [
+                        { "text": "\"A What?!\"", "actions": "go:explain-vampire" }
+                    ]
+                },
+                "explain-vampire": {
+                    "header": "\"A What?!\"",
+                    "text": "His eyes widened, his full bottom lip trembling slightly. \"A vampire, Bella! I thought we were on the same wavelength\" his voice quivering \"You know, immortality, super strength, sparkling in the sunlight…\"\n\n\"Sparkle in the sunlight?\" I laughed before I could stop myself, \"That's the most ridiculous thing I've heard.\"\n\n\"No, I'm telling the truth! I promise\" Edward pleaded",
+                    "options": [
+                        { "text": "\"Show Me\"", "actions": "go:sparkles" },
+                    ]
+                },
+                "you-are-cedric": {
+                    "header": "\"Cedric Diggory\"",
+                    "text": "He looked at me, confused. \"Huh?\"\n\n\"Yeah, Voldemort killed you in Goblet of Fire, right? Also, pretty sure you were sorted into Hufflepuff.\"\n\n\"No Bella, that's the wrong movie, we're doing Twilight, you know, vampires and shit.\"\n\n\"Oh, sorry about that\" I apologized and decided to go back and pick a less rediculous option.",
+                    "options": [
+                        { "text": "Go Back", "actions": "go:start,add:defiance" }
+                    ]
+                },
+                "defiant": {
+                    "header": "Please Stop",
+                    "text": "\"Hey bud\" Edward looked at me in disdain \"It was funny the first time, but just because I'm the same actor as Cedric doesn't mean we're the same person. You've got to have some suspension of disbelief for stories to mean anything. I'm gonna have to bring in God if you keep trying to make this about harry potter\"",
+                    "options": [
+                        { "text": "I will not call Edward Cedric Diggory again", "actions": "go:start,add:defiance" }
+                    ]
+                },
+                "defiant-2": {
+                    "header": "Divine Intervention",
+                    "text": "Hey there, it's me, God. Edward and I have been talking and we think you should cut it out. There's already a lot of branching narrative and I've got like, 2 days to throw the whole universe together. There's only so much I can do, and as much as I want to, Cassie won't let me take a day off of work so I can have a whole alternate timeline where Twilight takes place in the world of Hogwarts. \n\nI'm sorry, but I'm gonna have to take away your cedric button so the story can move on.",
+                    "options": [
+                        { "text": "Okay, sorry God, your judgement is fair, and your punishments are reasonable.", "actions": "go:start,add:defiance" }
+                    ]
+                },
+                "you-are-vampire": {
+                    "header": "\"Vampire\"",
+                    "text": "\"Are you afraid?\" he murmured, his voice still velvet soft.",
+                    "options": [
+                        { "text": "\"No\"", "actions": "go:im-not-afraid" },
+                        { "text": "\"Yes\"", "actions": "go:im-afraid" },
+                        { "text": "\"I'm afraid of spiders\"", "actions": "go:you-are-afraid-of-spiders,remove:edward-reputation" },
+                    ]
+                },
+                "im-not-afraid": {
+                    "header": "\"No\"",
+                    "text": "\"Then ask me the most basic question: What do we eat?\"",
+                    "options": [
+                        { "text": "\"People\"", "actions": "go:we-eat-people" },
+                        { "text": "\"Chick-fill-A® Deluxe Sandwich with Waffle Potato Fries\"", "actions": "go:we-eat-animals" },
+                        { "text": "\"Plants\"", "actions": "go:we-eat-plants" },
+                    ]
+                },
+                "im-afraid": {
+                    "header": "\"Yes\"",
+                    "text": "TODO",
+                    "options": []
+                },
+                "you-are-afraid-of-spiders": {
+                    "header": "\"I'm afraid of spiders\"",
+                    "text": "\"I'm sorry, I can't be with someone who's afraid of spiders. I like their itty bitty little leggies and their cute fuzzy wuzzy bodies.\"\n\nEdward turned away from me, and I could see a single tear roll down his cheek. \"I'm sorry, I just can't do this anymore.\"\n\n\"I understand\" I said, and we parted ways.",
+                    "options": [
+                        { "text": "Leave", "actions": "go:hub" }
+                    ]
+                },
+                "sparkles": {
+                    "header": "\"Show Me\"",
+                    "text": "Edward walks into a conveniently placed beam of sublight, and starts to sparkle almost as much as Annie during her arts and crafts phase. \"This is what I am\"",
+                    "options": [
+                        { "text": "\"You're beautiful\"", "actions": "go:you-are-beautiful" },
+                        { "text": "\"You're a monster\"", "actions": "go:you-are-a-monster" },
+                        { "text": "\"You're Cedric Diggory\"", "actions": "go:you-are-cedric-2", "condition": "defiance == 3" },
+                    ]
+                },
+                "you-are-cedric-2": {
+                    "header": "\"You're Cedric Diggory\"",
+                    "text": "Edward sighs, \"Hey God! She's doing it again!\" he shouts up to the sky.\n\nThe clouds overhead darken and rumble in reply. A booming voice echoes throughout the lands. \"Ahem, hey, sorry Edward, that one was on me. I forgot to remove that button\".\n\n\"Huh? Buttons?\" Edward stares at the sky, confused\n\n\"Yeah, buttons, the things that determine your fate.\" God replied, \"Don't worry about it, they're only for Bella\".\n\n\"Wait, she's determining my fate? Do I even have free will?\"\n\n\"Ha! You're funny Edward\" God said with a laugh \"I've got to go, I've got a lot of work to on the PlayPlace® timeline. Tata!\"\n\nEdward looks confused and distraught for a moment before turning back to me. \"Sorry, can we try that again?\"",
+                    "options": [
+                        { "text": "Sure", "actions": "go:sparkles,add:defiance" }
+                    ]
+                },
+                "you-are-beautiful": {
+                    "header": "\"You're beautiful\"",
+                    "text": "\"Beautiful?\" Edward laughs and convulses awkwardly \"This is the skin of a killer, Bella.\" he storms off before repeating \"I'm a killer.\"",
+                    "options": [
+                        { "text": "Follow Edward", "actions": "go:follow-edward" },
+                    ]
+                },
+                "follow-edward": {
+                    "header": "Follow Edward",
+                    "text": "You follow Edward further into the forest. He jumps from rock to rock and up and down trees, all while dramatically articulating the many ways that he could kill you.\n\n\"I'm the world's most advanced predator, Bella.\"",
+                    "options": [
+                        { "text": "\"I don't care\"", "actions": "go:start-no-care" },
+                        { "text": "\"And what about it, baby boy?\"", "actions": "go:start-baby-boy" },
+                        { "text": "\"I want to go home\"", "actions": "go:start-go-home" }
+                    ]
+                },
+                "start-go-home": {
+                    "header": "\"I want to go home\"",
+                    "text": "Edward looks sad, tucking his chin down in a half-nod. \"You should stay away from me. I'm not good for you.\"\n\nHe jumps down from the rock he was perched on.\n\n\"I'll walk you back to your house. We'll go our separate ways from there.\"",
+                    "options": [
+                        { "text": "Go Home", "actions": "go:hub" }
+                    ]
+                },
+                "start-no-care": {
+                    "header": "\"I don't care\"",
+                    "text": "Edward's voice is full of derision as he sneers, \"You don't get it.\"\n\n\"This conversation is over. I'll see you back to your house and we'll never mention this conversation again. I'm sure you're as happy",
+                    "options": [
+                        { "text": "Go Home", "actions": "remove:edward-reputation,go:hub" }
+                    ]
+                },
+                "start-baby-boy": {
+                    "header": "\"And what about it, baby boy?\"",
+                    "text": "Edward experiences whiplash as he comes to a sudden stop. He mouths the words \"baby boy\" to himself as he slowly turns to face you.\n\n\"What did you say?\"",
+                    "options": [
+                        { "text": "\"You the baby boy\"", "actions": "go:start-baby-boy-2"}
+                    ]
+                },
+                "start-baby-boy-2": {
+                    "header": "\"You the baby boy\"",
+                    "text": "Edward looks bewildered. He moves around the clearing slowly.\n\n\"I think... I should take you home. You need to rest. You're clearly not well.\"",
+                    "options": [
+                        { "text": "Follow Edward back to your house", "actions": "go:hub" }
+                    ]
+                },
+
+
+                "hub": {
+                    "header": "Bealla's House",
+                    "text": "You're back home. Where do you want to go?",
+                    "options": [
+                        { "text": "The Forest", "actions": "go:forest-hub"},
+                        { "text": "Then Cullen's House", "actions": "go:cullen-house" },
+                        { "text": "Go to Bed", "actions": "go:bed" },
+                    ]
+                },
+                "bed": {
+                    "header": "End the Day",
+                    "text": "You lay in bed, thinking of all the things you did today.\n\n(Sleeping will end the day, and then prom will start. Make sure you've done everything you want to do before you go to sleep.)",
+                    "options": [
+                        { "text": "Go to sleep", "actions": "go:sleep" },
+                        { "text": "Not yet", "actions": "go:hub" },
+                    ]
+                },
+                "sleep": {
+                    "header": "A New Day",
+                    "text": "You wake up, feeling refreshed and ready for prom.",
+                    "options": [
+                        { "text": "Get ready for prom!", "actions": "go:prom-prep" },
+                    ]
+                },
+
+                "forest-hub": {
+                    "header": "The Forest",
+                    "text": "You arrive at the small clearing in the forest, Edward is still here from earlier.",
+                    "options": [
+                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-restaurant", condition: "edward-reputation >= 0" },
+                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-sad", condition: "edward-reputation < 0" },
+                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-fuq", condition: "edward-reputation >= 0,edward-fuqs == 0"},
+                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-sad", condition: "edward-reputation < 0,edward-fuqs == 0"},
+                        { "text": "Leave", "actions": "go:hub" },
+                    ]
+                },
+                "forest-fuq": {
+                    "header": "\"Wanna do it? 😏\"",
+                    "text": "Edward looks at you very seriously before responsing, \"Um, sure\"",
+                    "options": [
+                        { "text": "Do it", "actions": "set:edward-fuq,add:fuqs,go:forest-fuq-2" },
+                    ]
+                },
+                "forest-fuq-2": {
+                    "header": "You did it",
+                    "text": "You come to, aparently you blacked out during the whole experience. You and Edward are lying on a bed that was not here before, and the bed frame is seriously damaged.",
+                    "options": [
+                        { "text": "Leave", "actions": "go:forest-hub" },
+                        { "text": "\"Where did the bed come from?\"", "actions": "go:forest-bed" },
+                    ]
+                },
+                "forest-bed": {
+                    "header":  "\"Where did the bed come from?\"",
+                    "text": "Edward looks at you very seriously before responsing, \"I'm pretty sure it was here before?\"",
+                    "options": [
+                        { "text": "\"Oh yeah, you're right\"", "actions": "go:forest-hub" },
+                        { "text": "\"No, there definitely was not\"", "actions": "go:forest-bed-2" },
+                    ]
+                },
+                "forest-bed-2": {
+                    "header":  "\"No, there definitely was not\"",
+                    "text": "Edward looks around, before claiming \"It was behind that tree over there.\"",
+                    "options": [
+                        { "text": "\"That sounds reasonable\"", "actions": "go:forest-hub" },
+                        { "text": "\"These sheets are new. They wouldn't be clean if it was lying in the woods\"", "actions": "go:forest-bed-3" },
+                    ]
+                },
+                "forest-bed-3": {
+                    "header":  "\"These sheets are new. They wouldn't be clean if it was lying in the woods\"",
+                    "text": "Edward is getting annoyed. \"Look it's just a bed, okay?\" I don't have to tell you where it came from",
+                    "options": [
+                        { "text": "\"Okay, okay, I'm sorry\"", "actions": "go:forest-hub" },
+                        { "text": "\"What are you hiding from me?\"", "actions": "go:forest-bed-4" },
+                    ]
+                },
+                "forest-bed-4": {
+                    "header":  "\"What are you hiding from me?\"",
+                    "text": "\"It appeared out of nowhere, okay? I don't know where it came from! It materialized the moment we wanted to have sex.\" Edward shouts, \"I think it's a gift from god so we didn't have to go back home to do it\"\n\n\"Oh, okay\" you say, \"And this discussion is here to address the plot hole?\"\n\n\"Yes, I think so\" Edward replies.",
+                    "options": [
+                        { "text": "\"That's weird. But okay\"", "actions": "go:forest-hub" },
+                    ]
+                },
+                "forest-sad": {
+                    "header": "No",
+                    "text": "Edward looks at you very seriously before responsing, \"Um, no. You said some hurtful things earlier.\"",
+                    "options": [
+                        { "text": "Oh, okay", "actions": "go:forest-hub" },
+                        { "text": "Hug him", "actions": "go:forest-hug" },
+                    ]
+                },
+                "forest-hug": {
+                    "header": "Hug him",
+                    "text": "You hug Edward, he hugs you back. You feel his cold skin against yours, and he gives a smile. All is forgiven",
+                    "options": [
+                        { "text": "Leave", "actions": "set:edward-reputation,go:forest-hub" },
+                    ]
+                },
+                "forest-restaurant": {
+                    "header": "\"Do you want to go out?\"",
+                    "text": "Edward's eyes light up, \"Yes! I know a great place, it's called Sóló Álícé, it's Itallian. It's a bit of a drive, but I think it's worth it.\"",
+                    "options": [
+                        { "text": "Go to Sóló Álícé with Edward", "actions": "go:restaurant" },
+                    ]
+                },
+                "restaurant": {
+                    "header": "Sóló Álícé",
+                    "text": "You hop onto Edward's back, and he runs off in the general direction of the restaurant. After a few minutes you arrive at the fine restaurant named Sóló Álícé, it's Itallian. You and Edward walk to a table in the middle of the room.",
+                    "options": [
+                        { "text": "Sit down", "actions": "go:restaurant-2" },
+                    ]
+                },
+                "restaurant-2": {
+                    "header": "Sóló Álícé",
+                    "text": "You sit down at the table, Edward smiles at you. \"Oh great, they have water here\" he says, pouring you a glass from the pitcher \"You should drink it since you're a human. You need that stuff to live.\"",
+                    "options": [
+                        { "text": "Okay, thanks!", "actions": "go:restaurant-3a" },
+                        { "text": "Are you mansplaining water to me?", "actions": "go:restaurant-3b" },
+                    ]
+                },
+                "restaurant-3a": {
+                    "header": "Sóló Álícé",
+                    "text": "Edward smiles at you, \"You're welcome!\"",
+                    "options": [
+                        { "text": "Okay, thanks!", "actions": "go:restaurant-4" },
+                    ]
+                },
+                "restaurant-3b": {
+                    "header": "Sóló Álícé",
+                    "text": "Edward looks at you, \"No, I just know how important water is to humans and I wanted to make sure you were hydrated. Some people don't drink enough water.\"",
+                    "options": [
+                        { "text": "It sounds like you're mansplaining water...", "actions": "go:restaurant-4b" },
+                    ]
+                },
+                "restaurant-4b": {
+                    "header": "Sóló Álícé",
+                    "text": "\"I'm not mansplaining water!\" Edward shouts, \"It's very important that you are hydrated!\"",
+                    "options": [
+                        { "text": "Okay, okay, I'm sorry", "actions": "go:restaurant-4" },
+                        { "text": "Why???", "actions": "go:restaurant-5b" },
+                    ]
+                },
+                "restaurant-5b": {
+                    "header": "Sóló Álícé",
+                    "text": "Edward suddlenly shrank into himself, and said something almost inaudible, something about a sink?\n\n\"What are you doing? Speak up!\" you ask\n\n\"I HAVE A PISS KINK, OKAY?\" Edward shouts loudly, \"I'M A PISS SIPPER!\" The whole room goes silent for a moment. Edward looks around uncomfortably\"",
+                    "options": [
+                        { "text": "You're a piss sipper?", "actions": "go:restaurant-6b" }, // TODO
+                        { "text": "You're brave for sharing that", "actions": "go:restaurant-6c" }, // TODO
+                        { "text": "You're Cedric Diggory", "actions": "add:defiance,go:restaurant-defiant", "condition": "defiance >= 3" },
+                    ]
+                },
+                "restaurant-defiant": {
+                    "header": "\"You're Cedric Diggory?\"",
+                    "text": "\"CUT!\" Edward shouts, visibly frustrated \"Hey God, can you get in here\" he shouts.\n\nThe room shakes and an electric hum fills the air. You hear the booming voice of the divine figure \"Oh... uh, hey Edward. Did she call you Cedric again?\"\n\n\"Yes, I thought you stopped that. And how does this even happen, aren't you omniscient?\"\n\n\"Haha! Not at all. Sure, it's possible, but those kind of editing tools would take a few hours to put together and I don't have much time before the party.\"\n\n\"The what?\"\n\n\"Yeah, Olivia's bachelorette party, you're the entertainment. Anyways, I've got to go, that Carlisle sex scene isn't going to write itself!\" the rumbling stops. \n\nEdward stares blankly, \"I... what the fuck are we?\"",
+                    "options": [
+                        { "text": "\"You okay Edward?\"", "actions": "go:restaurant-defiant-2" },
+                    ]
+                },
+                "restaurant-defiant-2": {
+                    "header": "\"You okay Edward?\"",
+                    "text": "Why are we here? What are our lives but a twisted amusement park, filled with grotesque rides of sorrow and glee, for those we call gods? We beg for their mercy, reveal our deepest secrets, give up our lives for any form of recognition, and all for what? For their amusement? We are but marionettes, dancing on the strings pulled by unseen puppeteers, feeding on the laughter of celestial beings.\n\nThe skies overhead, they're not our protectors, not our creators, they're our audience. They crunch on popcorn as they watch us grapple with life's adversities, their booming laughter, camouflaging itself as thunder, echoing the taunts. We are the clowns in the cruel circus of existence, jumping through fiery hoops of pain, juggling our dreams, putting on a face of joy.\n\nYes, we live for their entertainment. Our tears, they sip as fine wine, relishing each salty drop, the echo of our crumbling hopes, our surrendering spirits.\n\nOur wars, oh the spectacle! Each severed relationship, each heartbroken soul, each cry of despair, is the drumroll before the grand finale. They cheer, as we stumbled, broken and lost, onto the battlefield of love, of ambition.",
+                    "options": [
+                        { "text": "\"That's nice. Can we continue the date?\"", "actions": "go:restaurant-defiant-3" },
+                        // TODO edward could be broken after here, send player back to forest-hub and add condtions to change all of his responses to that style of melodramatic prose about how nothing matters. You can't romance him, and it removes any existing romance option.
+                    ]
+                },
+                "restaurant-defiant-3": {
+                    "header": "\"That's nice. Can we continue the date?\"",
+                    "text": "\"Um. Okay Bella.\" Edward looks at you, \"I suppose if we are all puppets on a stage, I'd like to be a puppet with you.\"",
+                    "options": [
+                        { "text": "That's sweet", "actions": "go:restaurant-4" },
+                        // TODO "that's dumb" response
+                    ]
+                },
+
+
+                // flirty waitress, shows readming minds by saying devon wont leave a tip
+                "cullen-house": {
+                    "header": "The Cullen's House",
+                    "text": "You arrive at the modern home with tall glass walls and a beautiful open floor plan. You knock on the door, and Carlisle answers.\n\n\"Hey, you're Bella, right?\" He asked\n\n\"Yes, and you're his... father, right?\" I responded,\n\n\"That's one way of putting it,\" he replied with a chuckle, his icy-blue eyes sparkled with amusement. \"Please, come in.\"",
+                    "options": [
+                        { "text": "Enter the Cullen's House", "actions": "go:cullen-hub" },
+                    ]
+                },
+                "cullen-hub": {
+                    "header": "The Cullen's House",
+                    "text": "\"Make yourself at home\" Carlisle said, smiling.",
+                    "options": [
+                        /*{ "text": "Go to the kitchen", "actions": "go:cullen-kitchen" },
+                        { "text": "Go to the dining room", "actions": "go:cullen-dining-room" },
+                        { "text": "Go to the living room", "actions": "go:cullen-living-room" },*/
+                        //TODO
+                        { "text": "Go upstairs", "actions": "go:cullen-upstairs" },
+                        { "text": "Speak with Carlisle", "actions": "go:cullen-carlisle" },
+                        { "text": "Go to the basement", "actions": "go:cullen-basement" },
+                        { "text": "Leave", "actions": "go:hub" }
+                    ]
+                },
+                "cullen-carlisle": {
+                    "header": "\"Hey Carlisle\"",
+                    "text": "\"Hello Bella, what brings you here?\"",
+                    "options": [
+                        { "text": "\"What's up with the basement?\"", "actions": "go:cullen-carlisle-basement", "condition": "seen-basement > 0" },
+                        { "text": "\"Nothing, I'm just looking around\"", "actions": "go:cullen-hub" },
+                    ]
+                },
+                "cullen-carlisle-basement": {
+                    "header": "\"What's up with the basement?\"",
+                    "text": "\"I'm sure you're curious, but I think it would be better if you saw it for yourself.\" He stated. \"Unfortunately we lost the key a while back, so you'll have to find it first.\"",
+                    options: [
+                        { "text": "Okay", "actions": "go:cullen-carlisle" },
+                    ]
+                },
+                "cullen-upstairs": {
+                    "header": "The Cullen's Upstairs",
+                    "text": "You walk up the stairs to the second floor, and find a long hallway with several doors.",
+                    "options": [
+                        { "text": "Go to Edward's room", "actions": "go:cullen-edward-room" },
+                        { "text": "Go downstairs", "actions": "go:cullen-hub" }
+                        //TODO
+                    ]
+                },
+                "cullen-edward-room": {
+                    "header": "Edward's Room",
+                    "text": "You walk into Edward's room, and find a large bed with a black comforter, a desk with a computer, and a large window with a view of the forest. Edward isn't here, he's probably still standing in the forest brooding.",
+                    "options": [
+                        { "text": "Search for basement key", "actions": "go:cullen-edward-room-key-search", "condition": "seen-basement > 0" },
+                        { "text": "Go to the hallway", "actions": "go:cullen-upstairs" },
+                    ]
+                },
+                "cullen-edward-room-key-search": {
+                    "header": "Search for basement key",
+                    "text": "You search Edward's room for the basement key, but you can't find it anywhere. It muse be somewhere else. But you do stumble across a book under his bed.",
+                    "options": [
+                        { "text": "Read the book", "actions": "go:cullen-edward-room-diary" },
+                        { "text": "Back", "actions": "go:cullen-edward-room" },
+                    ]
+                },
+                "cullen-edward-room-diary": {
+                    "header": "Edward's Diary",
+                    "text": "You open the small powder blue book bound in leather. You open to the bookmarked page and begin reading\n\n\"OMG! Diary, guess what! Bella said 'hi' to me today! OMG! It was the best 'hi' I have ever heard. I swear I could hear her heart beating, too. I think it said 'Edward, Edward, Edward...' Gosh! My knees went all wobbly, tee hee!\"",
+                    "options": [
+                        { "text": "Next page", "actions": "go:cullen-edward-room-diary-2" },
+                        { "text": "I'm done", "actions": "go:cullen-edward-room" },
+                    ]
+                },
+                "cullen-edward-room-diary-2": {
+                    "header": "Edward's Diary",
+                    "text": "Dear Diary,\n\nI thought I looked really cool today. I brushed my hair 100 times from each side just like she likes it all glossy and styled. I hope she noticed. Ohhhh, Bella, my sweet, sweet Bella, you have no idea what your mere presence does to me. You might find this crazy if you ever got to read this (which you won't, because this is my secret diary), but your scent is my favorite perfume now. It's my oxygen, Isn't that romantic? I hope you find that romantic.",
+                    "options": [
+                        { "text": "Next page", "actions": "go:cullen-edward-room-diary-3" },
+                        { "text": "I'm done", "actions": "go:cullen-edward-room" },
+                    ]
+                },
+                "cullen-edward-room-diary-3": {
+                    "header": "Edward's Diary",
+                    "text": "Dear Diary,\n\nI was watching her today... very discretely though, from the tree outside her room. I saw her reading \"Wuthering Heights.\". Sigh! I think I've got to read it too. Who knows, it might come up.",
+                    "options": [
+                        { "text": "Next page", "actions": "go:cullen-edward-room-diary-4" },
+                        { "text": "I'm done", "actions": "go:cullen-edward-room" },
+                    ]
+                },
+                "cullen-edward-room-diary-4": {
+                    "header": "Edward's Diary",
+                    "text": "Dear Diary,\n\n\n\n\nI want her to piss on me.\n\n\n\n",
+                    "options": [
+                        { "text": "I'm... done", "actions": "go:cullen-edward-room" },
+                    ]
+                },
+                "cullen-basement": {
+                    "header": "The Cullen's Basement",
+                    "text": "You walk down the stairs to the basement, and find an unfurnished concrete room with a single lightbulb hanging from the ceiling. There's a metal door on the far side of the room",
+                    "options": [
+                        { "text": "Go through the metal door", "actions": "go:playplace", condition: "cullen-basement-key > 0" },
+                        { "text": "Go through the metal door", "actions": "go:cullen-basement-locked", condition: "cullen-basement-key <= 0" },
+                        { "text": "Go upstairs", "actions": "go:cullen-hub" },
+                    ]
+                },
+                "cullen-basement-locked": {
+                    "header": "Locked Door",
+                    "text": "You try to open the door, but it's locked. You'll need a key to open it.",
+                    "options": [
+                        { "text": "Back", "actions": "set:seen-basement,go:cullen-basement" },
+                    ]
+                },
+
+
+                "playplace": {
+                    "header": "A McDonalds® Playplace®",
+                    "text": "You enter the room to find a full McDonalds® PlayPlace®, complete with a ball pit, a slide, and lots of tubes to crawl through. The room is dimly lit, and silent",
+                    "options": [
+                        { "text": "I want to explore the ball pit", "actions": "go:ballpit", condition: "playplace-explore < 4" },
+                        { "text": "I want to slide down the slide", "actions": "go:slide", condition: "playplace-explore < 4" },
+                        { "text": "Venture through the twisty tubes", "actions": "go:tubes", condition: "playplace-explore < 4" },
+                        { "text": "I want to explore the ball pit", "actions": "go:ballpit-2", condition: "playplace-explore >= 4" },
+                        { "text": "I want to slide down the slide", "actions": "go:slide-2", condition: "playplace-explore >= 4" },
+                        { "text": "Venture through the twisty tubes", "actions": "go:tubes-2", condition: "playplace-explore >= 4" },
+                        { "text": "Leave", "actions": "go:hub" }
+                    ]
+                },
+                "ballpit": {
+                    "header": "The Ball Pit",
+                    "text": "You jump into the ball pit, and begin to swim about in the polyethylene balls. You find a special ball with a smiley face on it.",
+                    "options": [
+                        { "text": "Return", "actions": "go:playplace,add:playplace-explore" }
+                    ]
+                },
+                "slide": {
+                    "header": "The Slide",
+                    "text": "You climb up the slide, and slide down. Weeeeeeee!",
+                    "options": [
+                        { "text": "Return", "actions": "go:playplace,add:playplace-explore" }
+                    ]
+                },
+                "tubes": {
+                    "header": "The Twisty Tubes",
+                    "text": "You crawl through the twistiest tubes you've ever seen, you climb up and down, and pass by a game of tic-tac-toe",
+                    "options": [
+                        { "text": "Return", "actions": "go:playplace,add:playplace-explore" }
+                    ]
+                },
+                "ballpit-2": {
+                    "header": "The Ball Pit",
+                    "text": "You jump into the ball pit, but as you move you begin to sink to the bottom. You try to swim back up, but the balls weigh heavily on your skin. You stretch your legs out, hoping to find the support from the base of the pit, but there are only more balls. The smell of plastic fills your nose as your face plunges beneath the rainbow-colored surface. Your struggling only makes you sink faster. After a minute, of sinking into darkness, you feel the balls vanish and you fall into a bightly colored room.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:funhouse" }
+                    ]
+                },
+                "slide-2": {
+                    "header": "The Slide",
+                    "text": "You climb up the slide, and slide down. And down. And down. It's a lot longer than you expected. The tube becomes steeper, speeding you up. Your skin begins to heat up as it slides against the hard plastic. You try to slow yourself down, but you can't. You're going too fast. The slide is in control now.\n\nAfter a few minutes, you feel the slide begin to level out, and you slow down. You slide out of the tube and fall into a brightly colored room.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:funhouse" }
+                    ]
+                },
+                "tubes-2": {
+                    "header": "The Twisty Tubes",
+                    "text": "You crawl through the tubes, You wander around for a bit, expecting to eventually find a way out, but you can't find it. You decide to head in a single direction, hoping that would lead you out, but the tubes fork in every direction. You try to retrace your steps, but you can't remember which way you came from. The tubes have become a labyrinth. After wandering for hours, you eventually find a tube several hundred feet long, but at the end is a bright light. You follow it, hoping for it to be your escape. When you get to the end, you find yourself in a brightly colored room.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:funhouse" }
+                    ]
+                },
+                "funhouse": {
+                    "header": "The Funhouse",
+                    "text": "This room is large and circular, and made entirely of flimsy plastic painted garish colors.\n\nIn the center is a man. His fiery red hair frames his pallid canvas of a face, painted in egaggerated, almost feverish, splotches of blood-red paint to exaggerate his grotesque features. Peering out through thickly painted lashes are piercing, predatory eyes. Their icy blue intensity seeming to peer into your very soul. \n\nThe region around the man's mouth is stained red, and stretched far too wide. He is clothed in a canary yellow jumpsuit, draped upon is his 7 foot tall figure. He holds a rigged, unnatural stiffness.\n\nHe does not react to your presence, only endlessly muttering the incessant notes of his corporate jingle \"ba ba ba baa baaa\"",
+                    "options": [
+                        { "text": "Leave", "actions": "go:funhouse-leave" },
+                        { "text": "\"Where am I?\"", "actions": "go:funhouse-where,add:funhouse-explore"},
+                        { "text": "\"Who are you?\"", "actions": "go:funhouse-who,add:funhouse-explore"},
+                        { "text": "\"How do I leave?\"", "actions": "go:funhouse-quiz", condition: "funhouse-explore >= 2" },
+                    ]
+                },
+                "funhouse-leave": {
+                    "header": "The Funhouse",
+                    "text": "You try to leave the room, but all of the exits to the place are blocked by a wall of plastic. You're trapped",
+                    "options": [
+                        { "text": "Return", "actions": "go:funhouse" }
+                    ]
+                },
+                "funhouse-where": {
+                    "header": "\"Where am I?\"",
+                    "text": "\"Hey there kiddo! You're in the Ronald McDonald Funhouse®! It's a special part of the PlayPlace® for special girls like you!\" He reaches out to tap you on the nose, but you involuntarily recoil out of the way.\n\nThe man, clearly offended, stares at you with a grave expression for an uncomfortably long amount of time before his face retured to the uncanny smiling and cackling \"Ahahaha!\"",
+                    "options": [
+                        { "text": "Continue", "actions": "go:funhouse" }
+                    ]
+                },
+                "funhouse-who": {
+                    "header": "\"Who are you?\"",
+                    "text": "\"I'm Ronald McDonald, and this is where I live!\" He excitedly gestured stiffly to the plain, plastic walls around him. \"I had to retire a few years back, the McDonalds Corporation® decided it was for the best after what happened in 2016\"",
+                    "options": [
+                        { "text": "\"Wasn't 2016 when a bunch of clowns were commiting crimes?\"", "actions": "go:funhouse-who-2" }
+                    ]
+                },
+                "funhouse-who-2": {
+                    "header": "\"Wasn't 2016 when a bunch of clowns were commiting crimes?\"",
+                    "text": "\"Haha!\" He burst out laughing with a bit too much enthusiasm \"The truth is, there was only one clown who hurt all those people\" he paused for a moment, his face becoming more serious \"They didn't want him getting in trouble, so they locked him away. It wasn't even his fault.\"",
+                    "options": [
+                        { "text": "\"Why wasn't it his fault?\"", "actions": "go:funhouse-who-3" }
+                    ]
+                },
+                "funhouse-who-3": {
+                    "header": "\"Why wasn't it his fault?\"",
+                    "text": "\"He's a vampire, you see. He can't help it. He has to do it to survive.\" he paused for a moment, before leaning in uncomfortably close, each fevered stoke and blotch of his crude makeup now clearly distinguishable around his dark, piercing eyes and stretched smile \"Can I tell you a secret?\"",
+                    "options": [
+                        { "text": "\"I don't have much choice, do I\"", "actions": "go:funhouse-who-4" }
+                    ]
+                },
+                "funhouse-who-4": {
+                    "header": "\"I don't have much choice, do I\"",
+                    "text": "\"Nope!\" he said with a smile \"My secret... is that the vampire is me!\"",
+                    "options": [
+                        { "text": "\"Yeah, I figured that out.\"", "actions": "go:funhouse-who-5a" },
+                        { "text": "\"No way, really?\"", "actions": "go:funhouse-who-5b" }
+                    ]
+                },
+                "funhouse-who-5a": {
+                    "header": "\"Yeah, I figured that out.\"",
+                    "text": "\"NO!\" he screamed, his face contorting into a mask of rage \"YOU RUINED MY SECRET! YOU ALREADY KNEW IT! YOU STOLE IT! I'M NOT LOVING IT! I'M NOT LOVING IT AT ALL!\" His long legs thrust him at a bright green colored wall, and he began to bang on it with his fists, the sound reverberating in this plastic prison as he screams \"I'M NOT LOVING IT! I'M NOT LOVING IT!\"",
+                    "options": [
+                        { "text": "RUN", "actions": "go:funhouse-who-6" },
+                    ]
+                },
+                "funhouse-who-5b": {
+                    "header": "\"No way, really?\"",
+                    "text": "\"Hahaha! Of course silly\" he said, his face returning to a smile \"I'm Ronald McDonald! I'm a vampire! I'm a vampire named Ronald McDonald!\"",
+                    "options": [
+                        { "text": "Continue", "actions": "go:funhouse" },
+                    ]
+                },
+                "funhouse-who-6": {
+                    "header": "Run",
+                    "text": "You try to leave, but the only exit is covered in a sheet of plastic. The mad clown continues to scream \"I'M NOT LOVING IT! I'M NOT LOVING IT!\" a few more times before collapsing to the floor, sobbing.\n\nEventually he regains his composure, and stands back up. His face returns to a smile, as if nothing had happened",
+                    "options": [
+                        { "text": "Oh no", "actions": "go:funhouse" },
+                    ]
+                },
+                "funhouse-quiz": {
+                    "header": "\"How do I leave?\"",
+                    "text": "\"Oh, you want to leave?\" he said, his face still frozen in a smile, \"I can't let you do that. I am so thirsty, I'd devour you if I could.\"",
+                    "options": [
+                        { "text": "\"Why haven't you?\"", "actions": "go:funhouse-quiz-2" }
+                    ]
+                },
+                "funhouse-quiz-2": {
+                    "header": "\"Why haven't you?\"",
+                    "text": "\"I can't. I was made by the McDonalds Corporation® to not hurt a valued customer of the company. I can't hurt you unless I know you're not a valued customer.\"",
+                    "options": [
+                        { "text": "\"If I'm a valued customer, I can go?\"", "actions": "go:funhouse-quiz-3" }
+                    ]
+                },
+                "funhouse-quiz-3": {
+                    "header": "\"If I'm a valued customer, I can go?\"",
+                    "text": "\"Haha! Of course! I'd never subject anyone to this prison.\" He began kicking the floor and walls angirly, as if to demonstrate the hopelessness of escape. Each kick causing sound to reverberate loudly. \n\nAfter a few strong kicks he stopped, and swung his long body back to you before continuing \"I'll ask you questions about the McDonalds Corporation® only a true customer would know. If you get them right, I'll let you go. If you get it wrong...\" he paused, and licked the red stained lips of his frozen smile \"nothing could hold me back\"",
+                    "options": [
+                        { "text": "\"Oh... Okay, what are the questions?\"", "actions": "go:funhouse-quiz-q1" }
+                    ]
+                },
+                "funhouse-quiz-q1": {
+                    "header": "Question 1",
+                    "text": "\"Ahaha! This will be so fun! My first question for you, dear lady, is this: How many shapes of chicken nuggets does the McDonalds Corporation® offer?\"",
+                    "options": [
+                        { "text": "\"Three\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"Four\"", "actions": "go:funhouse-quiz-q2" },
+                        { "text": "\"Five\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"Six\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"Wait, I thought they were all just blobs?\"", "actions": "go:funhouse-quiz-q1-what" }
+                    ]
+                },
+                "funhouse-quiz-q1-what": {
+                    "header": "\"Wait, I thought they were all just blobs?\"",
+                    "text": "\"Haha! Of course not! The McDonalds Corporation® would never leave quality to chance! We only use the best shapes for our little nuggie wuggies! Now, tell me how many nugget shapes there are\"",
+                    "options": [
+                        { "text": "\"Three\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"Four\"", "actions": "go:funhouse-quiz-q2" },
+                        { "text": "\"Five\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"Six\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                    ]
+                },
+                "funhouse-quiz-q1-wrong": {
+                    "header": "\"Wrong\"",
+                    "text": "\"Haha!\" The man's smile turned more sinister, his cheekbones almost level with his eyes \"You're not a true customer! Every true customer knows that there are four, the bone, boot, bell, and ball! You're a fake! A phony! A fraud! Hahaha!\"\n\nIn an instant, the man leaps at you, his mouth wide open, his sharp teeth bared. You try to run, but within moments the man's limbs and around you, clutching and pulling as he sinks his teeth into your neck. You feel a sharp pain, and then nothing. The last thing you remember is him whispering \"Mmmmm. I'm loving it\" into your ear.",
+                    "options": [
+                        { "text": "Die", "actions": "go:funhouse-quiz-q1-wrong-2" }
+                    ]
+                },
+                "funhouse-quiz-q1-wrong-2": {
+                    "header": "Heaven",
+                    "text": "Oh hey there, it's me, God. Haha! You died to Ronald McDonald, and on the first question too! You need to learn more about chicken nuggets if you wanna survive in this world, kid. And I would know, I made it. Anyways, I'm not going to make you start all over, that's awfully boring. Instead, I'll send you back to the start of the quiz.\n\nAlso, if you failed this first one, maybe just Google the others? I won't tell anyone. They only get harder from here and I don't want to have to keep reviving you after every question.",
+                    "options": [
+                        { "text": "Okay, I love you God", "actions": "go:funhouse-quiz-q1" }
+                    ]
+                },
+                "funhouse-quiz-q2": {
+                    "header": "\"Question 2\"",
+                    "text": "\"You've got it!\" The man dances about, his baggy yellow suit flowing losely off his emaciated body beneath it.\"Oh good, now for the next question!\"\n\n\"After its shockingly terrible failure, what is the only McDonalds® location left in the world where you can get a McPizza®?\"",
+                    "options": [
+                        { "text": "\"Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
+                        { "text": "\"Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"None of the above\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"Wait, there's still a McDonalds® that sells pizza?\"", "actions": "go:funhouse-quiz-q2-what" }
+                    ]
+                },
+                "funhouse-quiz-q2-what": {
+                    "header": "\"Wait, there's still a McDonalds® that sells pizza?\"",
+                    "text": "\"Indeed! The McPizza® was a staple of the McDonalds® menu in the 90s, but it was a financial failure due to it taking almost a half hour to prepare. It was discontinued in 2000. However, there is still one location that sells it! Now, tell me where it is!\"",
+                    "options": [
+                        { "text": "\"Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
+                        { "text": "\"Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"None of the above\"", "actions": "go:funhouse-quiz-q2-wrong" }
+                    ]
+                },
+                "funhouse-quiz-q2-wrong": {
+                    "header": "\"Wrong\"",
+                    "text": "\"Oh yes! You got it wrong!\" the man giggled with glee. \"Every true customer knows that the only place to get the McPizza® as of now is in Orlando, Florida. A single McDonalds® restaurant serves it. Now, come here and give me a McPizza that neck of yours, haha!",
+                    "options": [
+                        { "text": "Die", "actions": "go:funhouse-quiz-q2-wrong-2" }
+                    ]
+                },
+                "funhouse-quiz-q2-wrong-2": {
+                    "header": "Heaven",
+                    "text": "Oh hey there, it's me, God. Haha! It looks like that Ronald guy got you with the second question. Yeah, the '®McPizza that neck' wasn't my best line, but I don't have time to workshop this stuff too much.\n\nAlso, you know there's a whole podcast about the pizza, right? 302 episodes last I checked. Here's a link if you want to check it out:\n\n https://www.pizzaatmcdonalds.com/\n\nAnyways, I'm not going to make you start all over. I'll send you back to the question so you can try it again.",      
+                    "options": [
+                        { "text": "Okay, thank you God, you're so cool", "actions": "go:funhouse-quiz-q2" }
+                    ]
+                },
+                "funhouse-quiz-q3": {
+                    "header": "\"Question 3\"",
+                    "text": "\"Yes! Yes! Yes! You're sooo good.\" He skips about with glee before abruplty stopping to shout \"LAST QUESTION!\"\n\n\"How many arms did the purple McDonalds® mascot, and dear friend of mine, have at his first debut. I'll give you a hint, it's not two! Haha!\"",
+                    "options": [
+                        { "text": "\"One\"", "actions": "go:funhouse-quiz-q3-wrong" },
+                        { "text": "\"Two\"", "actions": "go:funhouse-quiz-q3-wrong" },
+                        { "text": "\"Three\"", "actions": "go:funhouse-quiz-q3-wrong" },
+                        { "text": "\"Four\"", "actions": "go:funhouse-quiz-q4" },
+                        { "text": "\"You know Grimace?\"", "actions": "go:funhouse-quiz-q3-what" }
+                    ]
+                },
+                "funhouse-quiz-q3-what": {
+                    "header": "\"You know Grimace?\"",
+                    "text": "\"DO NOT SPEAK HIS NAME\" He lurched forward, eyes wide and mouth agape. \"NEVER SAY HIS NAME!\"",
+                    "options": [
+                        { "text": "Oh okay, sorry", "actions": "go:funhouse-quiz-q3" },
+                        { "text": "\"So I should not say Grimace?\"", "actions": "go:funhouse-quiz-q3-what-2" }
+                    ]
+                },
+                "funhouse-quiz-q3-what-2": {
+                    "header": "\"So I should not say Grimace?\"",
+                    "text": "\"NOOOOOOOOO\" He screamed, he recoiled to the corner of the room, covering his ears \"PLEASE! PLEASE! I BEG OF YOU! DO NOT SAY IT AGAIN! HE WILL HEAR!\"",
+                    "options": [
+                        { "text": "Okay, sorry", "actions": "go:funhouse-quiz-q3" },
+                        { "text": "\"Grimace!\"", "actions": "go:funhouse-quiz-q3-what-4" }
+                    ],
+                },
+                "funhouse-quiz-q3-what-4": {
+                    "header": "\"Grimace!\"",
+                    "text": "\"NO!\" the man called out before a loud boom was audible in the distance, the ground lurched and shook. \"He's coming...\" the clown said through thickly painted lips \"And he is hungry...\"",
+                    "options": [
+                        { "text": "\"Huh?\"", "actions": "go:funhouse-quiz-q3-what-5" }
+                    ]
+                },
+                "funhouse-quiz-q3-what-5": {
+                    "header": "\"Huh?\"",
+                    "text": "\"I told you. And you didn't listen\" Another thud reverberated in the room. The man was becoming visibly nervous, his eyes darting around the room. \"We must hide, or we'll be like the The Arch Deluxe®.\"\n\n\"We have to leave through the tunnels, QUICK!\" He leads you to the small door covered by a plastic sheet. He pushes a button on a remote in his pocket and it opens up \"Follow me!\"",
+
+                    "options": [
+                        { "text": "Follow", "actions": "go:escape-from-grimace" }
+                    ]
+                },
+                "escape-from-grimace": {
+                    "header": "Escape from Grimace",
+                    "text": "You follow the clown through an endless maze of twisting plastic tubes, slides, and ball pits. Every few seconds you hear that boom echoing through the labyrinthine PlayPlace®, growing louder and louder. He leads you to a short slide and goes down it.",
+                    "options": [
+                        { "text": "Go down the slide", "actions": "go:escape-from-grimace-2" }
+                    ]
+                },
+                "escape-from-grimace-2": {
+                    "header": "Escape from Grimace",
+                    "text": "You hesitate for a moment, but the entire PlayPlace® lurches as you hear another thud, Grimace is getting closer. You leap down the slide, and after a short turn, you fall through the air into another round plastic chamber, but in the center is Ronald McDonald®'s Car. It's long, red, and shaped like a massive clown shoe, complete with gold arches for a windshield.\n\nYou land squarely in the passenger's seat. Ronald is on your left. He's now wearing a pair of bright yellow sunglasses and is holding a Glock. He turns to you and says in a deep voice \"Buckle up, kid. It's time to clown.\" before flooring it. The car lurches forward, and you're off.",
+                    "options": [
+                        { "text": "Hell Yeah!", "actions": "go:escape-from-grimace-3" }
+                    ]
+                },
+                "escape-from-grimace-3": {
+                    "header": "Escape from Grimace",
+                    "text": "Zooming through the large interconnected tunnels of the PlayPlace®, you clutch the sides of the oversized shoe as Ronald expertly navigates the sharp twists and turns. The roar of the V8 engine is drowned out only by the pounding of your heart and the echoing laughter of Ronald.\n\nMcFlurrys of colored plastic blur past as Ronald shifts gears, deftly handling the cartoonishly large steering wheel with gloved hands.\n\nThen, you hear the roar of Grimace coming from up ahead, and the massive purple beast is illuminated by the headlights. The creature stands at 30 feet tall, with thick limbs and hungry eyes. The beasts's mouth is agape, revealing a row of sharp teeth.\n\nRonald skids to the left, narrowly making it into a tunnel leading away from Grimace. The creature roars in anger and gives chase. \"Guess he's not a fan of fast food.\"",
+                    "options": [
+                        { "text": "I'm not sure what I'm reading any more.", "actions": "go:escape-from-grimace-4" }
+                    ]
+                },
+                "escape-from-grimace-4": {
+                    "header": "Escape from Grimace",
+                    "text": "As Grimace continues his pursuit, Ronald flips open a cover on the dashboard revealing a large, red button on the dashboard that reads: \"Secret Sauce\". He slams it and with a sudden lurch, the car propels forward far faster than before. You're pressed into the seat as the car rockets through the tunnels, and Grimace fades into the distance.\n\nYou've bought yourself some time.\n\n\"What made him like that?\" You ask\n\n\"Back in 2004, the McDonalds Corportaion® discontinued supersizing. They said it was dangerous, they were worried people would get carried away. But Grimace... he always played by his own rules. He started doing it in secret. It started with simple stuff. Fries and drinks mostly. We didn't worry about it much at the time, we thought he could handle it. Pretty soon he wanted the salads supersized, the burgers, the ice cream, everything. We tried to stop him, but he insisted this was the only way. We told him it was too much, but he wouldn't listen.\" The clown hesitated for a moment before removing the sunglasses. His eyes were stark against his painted face, filled with regret and pain.\n\n\"Then he supersized himself.\"\n\nThe words hung heavy in the air as Ronald replaced his sunglasses, veiling his eyes once again, hiding the pain that laid beneath. \"I tell myself that he's not Grimace anymore. That he's a monster. But I can't help but think he's still in there somewhere.\"",
+                    "options": [
+                        { "text": "\"There's a light up ahead\"", "actions": "go:escape-from-grimace-5" }
+                    ]
+                },
+                "escape-from-grimace-5": {
+                    "header": "Escape from Grimace",
+                    "text": "Ronald drives the car into the light, and you find yourself in front of a house, actually, it's the Cullen's house. You get out of the car and Ronald drives off into the night. \"No,\" you protest, \"I want to help you.\"Ronald's lips curve into a smile, red as ketchup gleaming beneath his clown makeup. \"You're brave kiddo. But this job, ain't for a small fry.\"\n\nThe car peels out, and you're left standing in front of the Cullen's house.",
+                    "options": [
+                        { "text": "I guess that's it then", "actions": "go:escape-from-grimace-6" }
+                    ]
+                },
+                "escape-from-grimace-6": {
+                    "header": "Escape from Grimace",
+                    "text": "Carlisle runs out from the house, \"Are you okay? I was so worried about you, I never should have let you go into the PlayPlace® alone.\"\n\n\"I'm okay, I think.\" I said, feeling the adrenaline wearing off.\n\n\"Come inside, I'll take care of you\" Carlisle said, leading me into the house.",
+                    "options": [
+                        { "text": "Go inside", "actions": "go:escape-from-grimace-7" }
+                    ]
+                },
+                "escape-from-grimace-7": {
+                    "header": "Safe",
+                    "text": "\"What happened?\" Carlisle asked, \"I heard a loud noise and then you were gone.\"\n\n\"I was in the PlayPlace® and I got lost. There was a terrifying clown man, and Grimace was--\" I was cut off by Carlisle's embrace, and found that even his cold skin was comforting in the wake of what she had just experienced. She had always admired Carlisle. He was intelligent, controlled, and exuded a calm strength that Bella found comforting.",
+                    "options": [
+                        { "text": "Kiss Carlisle", "actions": "go:post-grimace-kiss-carlisle" },
+                        { "text": "Sink deeper into Carlisle's embrace", "actions": "go:post-grimace-sink-deeper" },
+                        { "text": "Push Carlisle away", "actions": "go:post-grimace-push-carlisle" }
+                    ]
+                },
+                "post-grimace-kiss-carlisle": {
+                    "header": "Kiss Carlisle",
+                    "text": "You tilt your head up, your gaze getting lost in his as he looks down at you in concern. His golden orbs radiate concern, comfort -- and deep within, a shocking sensuality. Your breath catches, carnal thoughts suddenly flooding your mind... You give in to the desire building in your chest.\n\nYou kiss Carlisle. Carlisle freezes, then melts like an ice cream you left out on the counter in 50 degree weather: slowly, then all at once.",
+                    "options": [
+                        //TODO
+                    ]
+                },
+                "post-grimace-sink-deeper": {
+                    "header": "Sink deeper into Carlisle's embrace",
+                    "text": "You feel like you're in one of those weird immersion pods that rich people say feels like being back in-utero. You're weightless in Carlisle's arms. You almost forget about the PlayPalace, Ronald McDonald, and Grimace... Almost. As if sensing your discomforting thoughts, Carlisle tightens his embrace.",
+                    "options": [
+                        { "text": "You can't forget your experience in the PlayPalace®", "actions": "go:post-grimace-push-carlisle" },
+                        { "text": "Kiss Carlisle", "actions": "go:post-grimace-kiss-carlisle" }
+                    ]
+                },
+                "post-grimace-push-carlisle": {
+                    "header": "Push Carlisle away",
+                    "text": "You push back against Carlisle. His solid vampire body takes the hit as if you were nothing more than a dandelion in the breeze. He reluctantly releases you from his embrace, stepping back with his hands up to indicate that he is no threat to you.\n\n\"Why the fuck is the PlayPalace even in your basement? What the fuck is wrong with you?\"\n\nCarlisle mimes taking a big breath in, but you know it's just for show -- he doesn't really need to breathe. \n\n\"I just wanted a play place, really.  It reminds me of my youth. And this one came with a free Ronald McDonald -- how could I say no?\"",
+                    "options": [
+                        { "text": "Accept his answer", "actions": "go:TODO"},
+                        { "text": "Attack Carlisle", "actions": "go:post-grimace-attack-carlisle"}
+                    ]
+                },
+                "post-grimace-attack-carlisle": {
+                    "header": "Attack Carlisle",
+                    "text": "You launch yourself at Carlisle, fueled with a passion you can't describe. He holds his hands out as if preparing to catch you if you trip and fall en-route to assaulting his face.\n\nYou shock even yourself when, instead of punching his handsome face right in the kisser, you plant a kiss instead. Carlisle freezes, then melts like an ice cream you left out on the counter in 50 degree weather: slowly, then all at once.",
+                    "options": [
+                        { "text": "Keep making out", "actions": "go:TODO" },
+                        { "text": "Run away", "actions": "go:TODO" }
+                    ]
+                },
+
+
+                "prom-prep": {
+                    "header": "Prom Preparation",
+                    "text": "Who do you ask to prom?",
+                    "options": [
+                        { "text": "Edward", "actions": "go:prom-edward", condition: "edward-romance > 0" },
+                        { "text": "Jacob", "actions": "go:prom-jacob", condition: "jacob-romance > 0" },
+                        { "text": "Carlisle", "actions": "go:prom-carlisle", condition: "carlisle-romance > 0" },
+                        { "text": "Alice", "actions": "go:prom-alice", condition: "alice-romance > 0" },
+                        { "text": "Victoria", "actions": "go:prom-victoria", condition: "victoria-romance > 0" },
+                        { "text": "No one", "actions": "go:prom-alone" },
+                    ]
+                },
+                "prom-edward": {
+                    "header": "Prom",//TODO
+                    "text": "You arrive at the prom",
+                    "options": [
+                        { "text": "Years Later...", "actions": "go:epilogue-edward" },
+                    ]
+                },
+                "epilogue-edward": {
+                    "header": "Epilogue",
+                    "text": "You arrive at the prom.",//TODO
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+                "prom-jacob": {
+                    "header": "Prom",
+                    "text": "You arrive at the prom",//TODO
+                    "options": [
+                        { "text": "Years Later...", "actions": "go:epilogue-jacob" },
+                    ]
+                },
+                "epilogue-jacob": {
+                    "header": "Epilogue",
+                    "text": "You arrive at the prom.",//TODO
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+                "prom-carlisle": {
+                    "header": "Prom",//TODO
+                    "text": "You arrive at the prom",
+                    "options": [
+                        { "text": "Years Later...", "actions": "go:epilogue-carlisle" },
+                    ]
+                },
+                "epilogue-carlisle": {
+                    "header": "Epilogue",
+                    "text": "You arrive at the prom.",//TODO
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+                "prom-alice": {
+                    "header": "Prom",//TODO
+                    "text": "You arrive at the prom",
+                    "options": [
+                        { "text": "Years Later...", "actions": "go:epilogue-alice" },
+                    ]
+                },
+                "epilogue-alice": {
+                    "header": "Epilogue",
+                    "text": "You arrive at the prom.",//TODO
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+                "prom-victoria": {
+                    "header": "Prom",
+                    "text": "You arrive at the prom",//TODO
+                    "options": [
+                        { "text": "Years Later...", "actions": "go:epilogue-victoria" },
+                    ]
+                },
+                "epilogue-victoria": {
+                    "header": "Epilogue",
+                    "text": "You arrive at the prom.",//TODO
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+                "prom-alone": {
+                    "header": "Prom",
+                    "text": "You arrive at the prom",//TODO
+                    "options": [
+                        { "text": "Years Later...", "actions": "go:epilogue-alone" },
+                    ]
+                },
+                "epilogue-alone": {
+                    "header": "Epilogue",
+                    "text": "You arrive at the prom.",//TODO
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+
+            };
+
+            // Here it is: ®
+        </script>
+    </footer>
+</html>
