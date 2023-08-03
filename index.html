@@ -431,7 +431,7 @@
                     "text": "\"Then ask me the most basic question: What do we eat?\"",
                     "options": [
                         { "text": "\"People\"", "actions": "go:we-eat-people" },
-                        { "text": "\"Chick-fill-A® Deluxe Sandwich with Waffle Potato Fries\"", "actions": "go:we-eat-animals" },
+                        { "text": "\"Chick-fill-A® Deluxe Sandwich with Waffle Potato Fries\"", "actions": "go:we-eat-chick-fill-a" },
                         { "text": "\"Plants\"", "actions": "go:we-eat-plants" },
                     ]
                 },
@@ -540,8 +540,8 @@
                     "options": [
                         { "text": "\"Do you want to go out?\"", "actions": "go:forest-restaurant", condition: "edward-reputation >= 0" },
                         { "text": "\"Do you want to go out?\"", "actions": "go:forest-sad", condition: "edward-reputation < 0" },
-                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-fuq", condition: "edward-reputation >= 0,edward-fuqs == 0"},
-                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-sad", condition: "edward-reputation < 0,edward-fuqs == 0"},
+                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-fuq", condition: "edward-romance >= 0,edward-fuqs == 0"},
+                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-sad", condition: "edward-romance < 0,edward-fuqs == 0"},
                         { "text": "Leave", "actions": "go:hub" },
                     ]
                 },
@@ -628,13 +628,6 @@
                         { "text": "Are you mansplaining water to me?", "actions": "go:restaurant-3b" },
                     ]
                 },
-                "restaurant-3a": {
-                    "header": "Sóló Álícé",
-                    "text": "Edward smiles at you, \"You're welcome!\"",
-                    "options": [
-                        { "text": "Okay, thanks!", "actions": "go:restaurant-4" },
-                    ]
-                },
                 "restaurant-3b": {
                     "header": "Sóló Álícé",
                     "text": "Edward looks at you, \"No, I just know how important water is to humans and I wanted to make sure you were hydrated. Some people don't drink enough water.\"",
@@ -646,7 +639,7 @@
                     "header": "Sóló Álícé",
                     "text": "\"I'm not mansplaining water!\" Edward shouts, \"It's very important that you are hydrated!\"",
                     "options": [
-                        { "text": "Okay, okay, I'm sorry", "actions": "go:restaurant-4" },
+                        { "text": "Okay, okay, I'm sorry", "actions": "go:restaurant-3a" },
                         { "text": "Why???", "actions": "go:restaurant-5b" },
                     ]
                 },
@@ -654,8 +647,8 @@
                     "header": "Sóló Álícé",
                     "text": "Edward suddlenly shrank into himself, and said something almost inaudible, something about a sink?\n\n\"What are you doing? Speak up!\" you ask\n\n\"I HAVE A PISS KINK, OKAY?\" Edward shouts loudly, \"I'M A PISS SIPPER!\" The whole room goes silent for a moment. Edward looks around uncomfortably\"",
                     "options": [
-                        { "text": "You're a piss sipper?", "actions": "go:restaurant-6b" }, // TODO
-                        { "text": "You're brave for sharing that", "actions": "go:restaurant-6c" }, // TODO
+                        { "text": "You're a piss sipper?", "actions": "go:restaurant-6b" },
+                        { "text": "You're brave for sharing that", "actions": "go:restaurant-6b" },
                         { "text": "You're Cedric Diggory", "actions": "add:defiance,go:restaurant-defiant", "condition": "defiance >= 3" },
                     ]
                 },
@@ -678,12 +671,143 @@
                     "header": "\"That's nice. Can we continue the date?\"",
                     "text": "\"Um. Okay Bella.\" Edward looks at you, \"I guess none of it matters. And even if we are puppets, I think I'd like to be a puppet with you.\"",
                     "options": [
-                        { "text": "That's sweet", "actions": "go:restaurant-4" },
+                        { "text": "That's sweet", "actions": "go:restaurant-3a" },
                         // TODO "that's dumb" response
                     ]
                 },
-                // flirty waitress, shows readming minds by saying devon wont leave a tip
+                "restaurant-6b": {
+                    "header": "Sóló Álícé",
+                    "text": "Edward looks at you, \"Yes, I'm a piss sipper. I'm a piss sipper and I'm proud of it!\"",
+                    "options": [
+                        { "text": "\"Can we move on?\"", "actions": "go:restaurant-3a" },
+                        { "text": "\"HELL YEAH BROTHER!\"", "actions": "go:restaurant-7b" },
+                    ]
+                },
+                "restaurant-7b": {
+                    "header": "\"HELL YEAH BROTHER!\"",
+                    "text": "\"HELL YEAH!\" Edward says, beating his chest rhythmically, \"I'M A PISS SIPPER! I'M A PISS SIPPER! I'M A --\"\n\nYou are both cut off by a member of the staff forcibly removing both of you from the restaurant.",
+                    "options": [
+                        { "text": "\"Well that was fun\"", "actions": "go:restaurant-end-good" },
+                    ]
+                },
                 
+                "restaurant-3a": {
+                    "header": "Sóló Álícé",
+                    "text": "You and Edward are continuing your date, but Edward seems distracted. You ask him what's wrong.\n\n\"That guy over there, with the blonde hair, he's not going to leave a tip\" Edward says coldly.\n\n\"How do you know that?\" you ask\n\n\"I can read minds, Bella. I'm a vampire, remember?\"\n\n",
+                    "options": [
+                        { "text": "\"Wow, that's so inconsiderate\"", "actions": "go:restaurant-4a" },
+                    ]
+                },
+                "restaurant-4a": {
+                    "header": "\"Wow, that's so inconsiderate\"",
+                    "text": "\"It gets worse.\" He shakes his head \"He's here with his girlfriend, and she's introducing him to her friends for the first time\"",
+                    "options": [
+                        { "text": "\"You're joking\"", "actions": "go:restaurant-5a" },
+                    ]
+                },
+                "restaurant-5a": {
+                    "header": "\"You're joking\"",
+                    "text": "\"I'm afraid I'm not, he's going to make a terrible first impression.\" He turned to you \"A first impression that bad can have serious consequences.\n\n\"Like what\" you asked.\n\n\"It's bad enough that her friends might make a text based adventure game and shoehorn him into it.\"",
+                    "options": [
+                        { "text": "\"That is serious\"", "actions": "go:restaurant-6a" },
+                    ]
+                },
+                "restaurant-6a": {
+                    "header": "\"That is serious\"",
+                    "text": "\"Absolutely, but we can't dwell on an ex-boyfriends tipping habits, it would ruin the moment\"",
+                    "options": [
+                        { "text": "\"Okay, lets move on\"", "actions": "go:restaurant-7a" },
+                    ]
+                },
+                "restaurant-6a": {
+                    "header": "\"Okay, lets move on\"",
+                    "text": "The conversation moves on to other topics, everything is going well until you both notice that one of the waitresses keeps looking at Edward. You point it out to Edward, and when he looks at her, she winks at him",
+                    "options": [
+                        { "text": "Confront the waitress", "actions": "go:restaurant-waitress-confront" },
+                        { "text": "Discuss it with Edward", "actions": "go:restaurant-waitress-discuss" },
+                        { "text": "Ask the waitress to be your 'third'", "actions": "go:restaurant-waitress-third" },
+                    ]
+                },
+                "restaurant-waitress-discuss": {
+                    "header": "Discuss it with Edward",
+                    "text": "\"Is she flirting with you?\" You ask Edward\n\n\"Yeah I think she was.\" He replies. \"I'm surprised she didn't notice that we're clearly on a date\"\n\n\"I'll say something if it happens again\" you tell him",
+                    "options": [
+                        { "text": "Continue", "actions": "go:restaurant-waitress-discuss-2" },
+                    ]
+                },
+                "restaurant-waitress-discuss-2": {
+                    "header": "Discuss it with Edward",
+                    "text": "You both move on to discussing other topics when the waitress returns to refill Bella's water. As she does it she says she loves Edward's shirt, and gently touches his hand.\n\n\"Hey\", you start \"we're kind of on a date here…\"\n\n\"HAH! As if this beautiful man would ever be with a woman like you.\"",
+                    "options": [
+                        { "text": "\"Back off!\"", "actions": "go:restaurant-waitress-confront" },
+                    ]
+                },
+                "restaurant-waitress-third": {
+                    "header": "Ask the waitress to be your 'third'",
+                    "text": "The waitress comes back around to fill your water. She smiles at Edward\n\n\"Hey…\" you interject, she doesn't react, and is clearly not interested In what you have to say. \"You seem to like him so much, why don't you join us?\"\n\n\"Pfft\" she scoffs \"as of I'd ever share this man with you\" she looks at you \"He's all mine\"",
+                    "options": [
+                        { "text": "\"Back off!\"", "actions": "go:restaurant-waitress-confront" },
+                    ]
+                },
+                "restaurant-waitress-confront": {
+                    "header": "Confront the waitress",
+                    "text": "\"Hey!\" You shout \"back off lady, he's mine!\"\n\n\"Hah! As if you could stop me!\"\n\n\"You doubt my power?!\"\n\n\"I could beat you without even trying\"",
+                    "options": [
+                        { "text": "\"Fight me and you'll see just how wrong you are!\"", "actions": "go:restaurant-waitress-confront-2" },
+                    ]
+                },
+                "restaurant-waitress-confront-2": {
+                    "header": "Fight me and you'll see just how wrong you are!",
+                    "text": "The waitress began throwing punches with uncanny speed, which you dodge with ease. She hurls chair, tables, and cutlery at you, but none of it can touch you, her strength is no match for your agility.\n\n\"Hah, you almost made me use 10% of my power. You may be fast, but not fast enough for my Dinner Rush Flurry!\"",
+                    "options": [
+                        { "text": "Dodge the flurry of attacks", "actions": "go:restaurant-waitress-confront-3" },
+                    ]
+                },
+                "restaurant-waitress-confront-3": {
+                    "header": "Dodge the flurry of attacks",
+                    "text": "The waitress grabs a massive stack of plates, \"order up!\" She comes at you, throwing dozens of plates at you every second, but you deftly dodge all of them by jumping, rolling, and deflecting each plate. They fly through the air, and collide the walls and furniture, the shards scatter and ricochet, but they do not phase you. Your mind is clear and focused.",
+                    "options": [
+                        { "text": "\"Is that all you got?!\"", "actions": "go:restaurant-waitress-confront-4" },
+                    ]
+                },
+                "restaurant-waitress-confront-4": {
+                    "header": "\"Is that all you got?!\"",
+                    "text": "\"I've got more power than you could ever imagine! ACTIVATE ULTIMATE FORM!\" The waitress clutches her fists as lightning courses her body. Her muscles flex out of her uniform. \"KYAAAAA!\" She screams as the power surges through her. \"HE'S MIIIIIINE!\" She declares.\n\nThe waitress glares at you, her plain black uniform has transformed into gold and white material, blowing in the wind. She sets herself in a combat pose \"I'm afraid we only have outdoor seating!\", with a flick of her wrist a beam of energy emerges from her hand, slamming into you, sending you flying across the room, and destroying the wall.\n\nYour body tumbles onto the asphalt in the parking lot.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:restaurant-waitress-confront-5" },
+                    ]
+                },
+                "restaurant-waitress-confront-5": {
+                    "header": "\"Is that all you got?!\"",
+                    "text": "You lay ther in the parking lot as the imposing waitress emerges, levitating several feet off the ground, their skin glowing with energy. \"Ha! Not so fast now, are you. Edward will never want you after your pathetic performance\"\n\n\"Edward…\" you think to yourself \"I'm not doing this for me, I'm doing this for him. I have to defeat her, no matter what it takes.\" I struggle to stand up, the waitress seems surprised\n\n\"Why even try? Im clearly more skilled\"\n\n\"Heh, you just don't get it. Sure, you're abilities make you strong, but my love for Edward make me stronger!\" You slam a foot into the ground with enough force to sound like a clap thunder \"YOU WILL NEVER TAKE AWAY THE MAN I LOVE!\"\n\nYou charge at the waitress, running faster and with more determination than ever before. \"HAAAAA!\" The world around you becomes a blur, and all you can think of is Edward. You know what you have to do.",
+                    "options": [
+                        { "text": "\"Bella! Activate special move Clumsy Trip Kick!\".", "actions": "go:restaurant-waitress-confront-6" },
+                    ]
+                },
+                "restaurant-waitress-confront-6": {
+                    "header": "\"Bella! Activate special move Clumsy Trip Kick!\".",
+                    "text": "As you charge forward, you trip, but this is no ordinary trip. The moment your ankle rolled you knew that your love for Edward had allowed for you to perform the Perfect Trip. Spoken only of in legend, many theorized it to be impossible, but you knew that your love for Edward could make the impossible, possible.\n\nAs you executed the Perfect Trip, your body tumbled to the ground with such precision that you felt no pain, and no impact, your body rolled over the asphalt effortlessly as if it where a ball. It was kind of like Sonic.\n\n\"It's time for takeout!\"\n\nYou rolled into the waitress with incredible force, and she was helpless to stop your perfectly executed Clumsy Trip Kick. She flew through the air before smashing into the wall behind her, unconscious. ",
+                    "options": [
+                        { "text": "Continue", "actions": "go:restaurant-waitress-confront-7" },
+                    ]
+                },
+                "restaurant-waitress-confront-7": {
+                    "header": "\"You've won\"",
+                    "text": "Edward comes out and embraces you. He whispers \"I love you\" in your ear (TODO references to when this is said in the books?) and your heart flutters.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:restaurant-end-good" },
+                    ]
+                },
+                "restaurant-end-good": {
+                    "header": "Sóló Álícé",
+                    "text": "You and Edward leave the restaurant, you feel much closer to him now than you did before. You hop on his back and he runs you home.",
+                    "options": [
+                        { "text": "Continue", "actions": "set:edward-romance,go:hub" },
+                    ]
+                },
+
+
+
                 "cullen-house": {
                     "header": "The Cullen's House",
                     "text": "You arrive at the modern home with tall glass walls and a beautiful open floor plan. You knock on the door, and Carlisle answers.\n\n\"Hey, you're Bella, right?\" He asked\n\n\"Yes, and you're his... father, right?\" I responded,\n\n\"That's one way of putting it,\" he replied with a chuckle, his icy-blue eyes sparkled with amusement. \"Please, come in.\"",
@@ -710,14 +834,30 @@
                     "text": "\"Hello Bella, what brings you here?\"",
                     "options": [
                         { "text": "\"What's up with the basement?\"", "actions": "go:cullen-carlisle-basement", "condition": "seen-basement > 0" },
+                        { "text": "\"I went on a date with Edward\"", "actions": "go:cullen-carlisle-edward-date", "condition": "edward-romance > 0" },
+                        { "text": "\"I went on a date with Alice\"", "actions": "go:cullen-carlisle-alice-date", "condition": "alice-romance > 0" },
                         { "text": "\"Nothing, I'm just looking around\"", "actions": "go:cullen-hub" },
                     ]
                 },
                 "cullen-carlisle-basement": {
                     "header": "\"What's up with the basement?\"",
                     "text": "\"I'm sure you're curious, but I think it would be better if you saw it for yourself.\" He stated. \"Unfortunately we lost the key a while back, so you'll have to find it first.\"",
-                    options: [
+                    "options": [
                         { "text": "Okay", "actions": "go:cullen-carlisle" },
+                    ]
+                },
+                "cullen-carlisle-edward-date": {
+                    "header": "\"I went on a date with Edward\"",
+                    "text": "\"I heard, he told me all about it. It sounds like you two had a good time. He mentioned it went a little Dragon Ball-Z at the end, I hope you're alright.\"",
+                    "options": [
+                        { "text": "\"I'm okay\"", "actions": "go:cullen-carlisle" },
+                    ]
+                },
+                "cullen-carlisle-alice-date": {
+                    "header": "\"I went on a date with Alice\"",
+                    "text": "\"I can tell from your new outfit, it looks like you got a whole makeover. But I've always liked you just the way you are.\"",
+                    "options": [
+                        { "text": "\"Thanks\"", "actions": "go:cullen-carlisle" },
                     ]
                 },
                 "cullen-upstairs": {
@@ -725,6 +865,7 @@
                     "text": "You walk up the stairs to the second floor, and find a long hallway with several doors.",
                     "options": [
                         { "text": "Go to Edward's room", "actions": "go:cullen-edward-room" },
+                        { "text": "Go to Alice's room", "actions": "go:cullen-alice-room", "condition": "alice-romance > 0" },
                         { "text": "Go downstairs", "actions": "go:cullen-hub" }
                         //TODO
                     ]
@@ -774,6 +915,12 @@
                     "text": "Dear Diary,\n\n\n\n\nI want her to piss on me.\n\n\n\n",
                     "options": [
                         { "text": "I'm... done", "actions": "go:cullen-edward-room" },
+                    ]
+                },
+                "cullen-alice-room": {
+                    "header": "Alice's Room",
+                    "text": "TODO",
+                    "options": [
                     ]
                 },
                 "cullen-basement": {
@@ -948,21 +1095,21 @@
                     "header": "Question 1",
                     "text": "\"Ahaha! This will be so fun! My first question for you, dear lady, is this: How many shapes of chicken nuggets does the McDonalds Corporation® offer?\"",
                     "options": [
-                        { "text": "\"Three\"", "actions": "go:funhouse-quiz-q1-wrong" },
-                        { "text": "\"Four\"", "actions": "go:funhouse-quiz-q2" },
-                        { "text": "\"Five\"", "actions": "go:funhouse-quiz-q1-wrong" },
-                        { "text": "\"Six\"", "actions": "go:funhouse-quiz-q1-wrong" },
-                        { "text": "\"Wait, I thought they were all just blobs?\"", "actions": "go:funhouse-quiz-q1-what" }
+                        { "text": "\"There are three chicken nugget shapes\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"There are four chicken nugget shapes\"", "actions": "go:funhouse-quiz-q2" },
+                        { "text": "\"There are five chicken nugget shapes\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"There are six chicken nugget shapes\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"Wait, aren't they were all just blobs?\"", "actions": "go:funhouse-quiz-q1-what" }
                     ]
                 },
                 "funhouse-quiz-q1-what": {
                     "header": "\"Wait, I thought they were all just blobs?\"",
                     "text": "\"Haha! Of course not! The McDonalds Corporation® would never leave quality to chance! We only use the best shapes for our little nuggie wuggies! Now, tell me how many nugget shapes there are\"",
                     "options": [
-                        { "text": "\"Three\"", "actions": "go:funhouse-quiz-q1-wrong" },
-                        { "text": "\"Four\"", "actions": "go:funhouse-quiz-q2" },
-                        { "text": "\"Five\"", "actions": "go:funhouse-quiz-q1-wrong" },
-                        { "text": "\"Six\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"There are three chicken nugget shapes\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"There are four chicken nugget shapes\"", "actions": "go:funhouse-quiz-q2" },
+                        { "text": "\"There are five chicken nugget shapes\"", "actions": "go:funhouse-quiz-q1-wrong" },
+                        { "text": "\"There are six chicken nugget shapes\"", "actions": "go:funhouse-quiz-q1-wrong" },
                     ]
                 },
                 "funhouse-quiz-q1-wrong": {
@@ -983,9 +1130,9 @@
                     "header": "\"Question 2\"",
                     "text": "\"You've got it!\" The man dances about, his baggy yellow suit flowing losely off his emaciated body beneath it.\"Oh good, now for the next question!\"\n\n\"After its shockingly terrible failure, what is the only McDonalds® location left in the world where you can get a McPizza®?\"",
                     "options": [
-                        { "text": "\"Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
-                        { "text": "\"Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
-                        { "text": "\"Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"McPizza is served in Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
+                        { "text": "\"McPizza is served in Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"McPizza is served in Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
                         { "text": "\"None of the above\"", "actions": "go:funhouse-quiz-q2-wrong" },
                         { "text": "\"Wait, there's still a McDonalds® that sells pizza?\"", "actions": "go:funhouse-quiz-q2-what" }
                     ]
@@ -994,9 +1141,9 @@
                     "header": "\"Wait, there's still a McDonalds® that sells pizza?\"",
                     "text": "\"Indeed! The McPizza® was a staple of the McDonalds® menu in the 90s, but it was a financial failure due to it taking almost a half hour to prepare. It was discontinued in 2000. However, there is still one location that sells it! Now, tell me where it is!\"",
                     "options": [
-                        { "text": "\"Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
-                        { "text": "\"Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
-                        { "text": "\"Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"McPizza is served in Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
+                        { "text": "\"McPizza is served in Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
+                        { "text": "\"McPizza is served in Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
                         { "text": "\"None of the above\"", "actions": "go:funhouse-quiz-q2-wrong" }
                     ]
                 },
@@ -1018,10 +1165,10 @@
                     "header": "\"Question 3\"",
                     "text": "\"Yes! Yes! Yes! You're sooo good.\" He skips about with glee before abruplty stopping to shout \"LAST QUESTION!\"\n\n\"How many arms did the purple McDonalds® mascot, and dear friend of mine, have at his first debut. I'll give you a hint, it's not two! Haha!\"",
                     "options": [
-                        { "text": "\"One\"", "actions": "go:funhouse-quiz-q3-wrong" },
-                        { "text": "\"Two\"", "actions": "go:funhouse-quiz-q3-wrong" },
-                        { "text": "\"Three\"", "actions": "go:funhouse-quiz-q3-wrong" },
-                        { "text": "\"Four\"", "actions": "go:funhouse-quiz-q4" },
+                        { "text": "\"Grimace had two arms\"", "actions": "go:funhouse-quiz-q3-what" },
+                        { "text": "\"Grimace had four arms\"", "actions": "go:funhouse-quiz-q3-what" },
+                        { "text": "\"Grimace had six arms\"", "actions": "go:funhouse-quiz-q3-what" },
+                        { "text": "\"Grimace had eight arms\"", "actions": "go:funhouse-quiz-what" },
                         { "text": "\"You know Grimace?\"", "actions": "go:funhouse-quiz-q3-what" }
                     ]
                 },
@@ -1029,7 +1176,6 @@
                     "header": "\"You know Grimace?\"",
                     "text": "\"DO NOT SPEAK HIS NAME\" He lurched forward, eyes wide and mouth agape. \"NEVER SAY HIS NAME!\"",
                     "options": [
-                        { "text": "Oh okay, sorry", "actions": "go:funhouse-quiz-q3" },
                         { "text": "\"So I should not say Grimace?\"", "actions": "go:funhouse-quiz-q3-what-2" }
                     ]
                 },
@@ -1037,7 +1183,6 @@
                     "header": "\"So I should not say Grimace?\"",
                     "text": "\"NOOOOOOOOO\" He screamed, he recoiled to the corner of the room, covering his ears \"PLEASE! PLEASE! I BEG OF YOU! DO NOT SAY IT AGAIN! HE WILL HEAR!\"",
                     "options": [
-                        { "text": "Okay, sorry", "actions": "go:funhouse-quiz-q3" },
                         { "text": "\"Grimace!\"", "actions": "go:funhouse-quiz-q3-what-4" }
                     ],
                 },
@@ -1139,6 +1284,10 @@
                     ]
                 },
 
+                "mall-hub": {
+
+                },
+
 
                 "prom-prep": {
                     "header": "Prom Preparation",
@@ -1151,29 +1300,16 @@
                         { "text": "Victoria", "actions": "go:prom-victoria", condition: "victoria-romance > 0" },
                         { "text": "No one", "actions": "go:prom-alone" },
                     ]
-                },
+                }, // Jacob where the hell have you been loca, (who are you / become date options)
+                // Jacod imprints on renesme, so in epilogue she has a period and he loses all interests
                 "prom-edward": {
                     "header": "Prom",//TODO
-                    "text": "You arrive at the prom",
+                    "text": "You arrive at the prom. ",
                     "options": [
                         { "text": "Years Later...", "actions": "go:epilogue-edward" },
                     ]
                 },
                 "epilogue-edward": {
-                    "header": "Epilogue",
-                    "text": "You arrive at the prom.",//TODO
-                    "options": [
-                        { "text": "Restart", "actions": "restart:" },
-                    ]
-                },
-                "prom-jacob": {
-                    "header": "Prom",
-                    "text": "You arrive at the prom",//TODO
-                    "options": [
-                        { "text": "Years Later...", "actions": "go:epilogue-jacob" },
-                    ]
-                },
-                "epilogue-jacob": {
                     "header": "Epilogue",
                     "text": "You arrive at the prom.",//TODO
                     "options": [
@@ -1224,14 +1360,58 @@
                 },
                 "prom-alone": {
                     "header": "Prom",
-                    "text": "You arrive at the prom",//TODO
+                    "text": "You arrive at the prom and the red and blue lights dance across the crowds. The room is full of people talk and generally having a good time.\n\nYou start to dance with your friends Jessica and Lauren for a few minutes before a slow song comes on. All the couples come out to share the moment together. You return to your table and watch them swaying slowly to the rhythm of the music.\n\n\"Hey Bella!\" A voice calls our from behind you \"Where the hell have you been, loca?\"",
                     "options": [
-                        { "text": "Years Later...", "actions": "go:epilogue-alone" },
+                        { "text": "\"Oh, hi Jacob!", "actions": "go:prom-alone-2" },
+                    ]
+                },
+                "prom-alone-2": {
+                    "header": "Prom",
+                    "text": "\"Are you alright?\" he asked with a hint of concern\n\n\"Me?\" I replied \" Yeah I'm fine, I guess I'm just a bit sad that I don't have anyone to dance with\"\n\n\"You should dance with me.\" Jacob said with a wide grin on his face \"Come on! Let's go.\"",
+                    "options": [
+                        { "text": "\"I'd love to\"", "actions": "go:prom-jacob" },
+                        { "text": "\"I'm good, thanks\"", "actions": "go:prom-alone-3" },
+                    ]
+                },
+                "prom-alone-3": {
+                    "header": "\"I'm good, thanks\"",
+                    "text": "\"Okay! I... what?\" He asks, his face contorting as if trying to find the right emotion\n\n\"I'm okay, I don't want to dance\"\n\nJacob stood motionless, staring at Bella for several moments.\n\n\"BELLLAAAAA!\" He shrieked, looking around looking dazed and confused. \"How could you do this to me loca!?\"",
+                    "options": [
+                        { "text": "\"I'm sorry\"", "actions": "go:prom-alone-4" },
+                    ]
+                },
+                "prom-alone-4": {
+                    "header": "\"I'm sorry\"",
+                    "text": "\"y-your eggs Bella!\" Jacob stammered \"I want-- I need them Bella\"\n\n\"Jacob, you're scaring me\" You pleaded.\n\n\"BELLA!\" He screamed \"I-I'm telling you there's an egg in you and I neeeeed it. I imprinted on it. Bella egg, I need.\"",
+                    "options": [
+                        { "text": "\"What?\"", "actions": "go:prom-alone-5" },
+                    ]
+                },
+                "prom-alone-5": {
+                    "header": "\"What?\"",
+                    "text": "\"BELLA!\"\n\n\"Why do you keep shouting my name? I'm still right here.\"\n\nHe stopped for a moment, looked confused, he seemed to contemplate what he was doing, and took a moment to collect his thoughts before explaining, in the simplest way possible\n\n\"I need... I need your... eggs?\"",
+                    "options": [
+                        { "text": "\"I'm leaving\"", "actions": "go:epilogue-alone" },
                     ]
                 },
                 "epilogue-alone": {
                     "header": "Epilogue",
-                    "text": "You arrive at the prom.",//TODO
+                    "text": "Years go by and the insanity of prom has passed. You never found love gain, which is honestly impressive given the number of supernatural creatures constantly lusting over you. You did find joy in your solitude, but occasionally you would wonder about your past loves, and what it would have been like to go through life with them.",
+                    "options": [
+                        { "text": "Restart", "actions": "restart:" },
+                    ]
+                },
+                // TODO epilogues from Cultist Simulator
+                "prom-jacob": {
+                    "header": "\"I'd love to\"",
+                    "text": "Jacob grabs your hand and leads you to the dance floor. He pulls you in close, your face pressed against his chest. \"I couldn't stand to see such a beautiful girl on her own\" He said softly.\n\n\"I'm glad you're here\" I said as I listened to the rhythmic beating of his heart.\n\nWe didn't speak much during the dance, we both were immersed in the moment, and in each other. We could have swayed together for hours without noticing, it felt like time had stopped for us.\n\nThe music changed to something more upbeat, but you and Jacob spent the whole night together",
+                    "options": [
+                        { "text": "\"I love you\"", "actions": "go:epilogue-jacob" },
+                    ]
+                },
+                "epilogue-jacob": {
+                    "header": "Epilogue",
+                    "text": "You and Jacob grow closer, TODO use cultist sim story.\n\nThat is until one day, he seemed to lose interest in me. It was so sudden I don't know how to explain it. Although one time, late at night, I heard him crying, muttering about eggs? It was strange. Soon after we broke off the marriage. I found that I could never love someone anyone the way I loved jacob.",
                     "options": [
                         { "text": "Restart", "actions": "restart:" },
                     ]
@@ -1239,6 +1419,268 @@
 
             };
 
+            let names = new Set();
+            let links = new Set();
+            for (let i = 0; i < Object.entries(web).length; i++) {
+                let room = Object.entries(web)[i];
+                let name = room[0];
+                let hasExit = false;
+                for (let j = 0; j < room[1].options.length; j++) {
+                    let option = room[1].options[j];
+                    let parts = option.actions.split(",")
+                    for (let k = 0; k < parts.length; k++) {
+                        let part = parts[k];
+                        let op = part.split(":")[0];
+                        let arg = part.split(":")[1];
+                        if (op === "go") {
+                            links.add(arg);
+                            hasExit = true;
+                        }
+                        if (op === "restart") {
+                            hasExit = true;
+                        }
+                    }
+                }
+                if (!hasExit) {
+                    console.warn("No exits for room: " + name);
+                }
+                if (names.has(name)) {
+                    console.warn("Duplicate room: " + name);
+                }
+                names.add(name);
+            }
+            unusedNames = new Set(names);
+            links.forEach(l => {
+                if (!names.has(l)) {
+                    console.warn("Link has no room: " + l);
+                }
+                unusedNames.delete(l);
+            });
+            unusedNames.forEach(n => {
+                console.warn("Room has no links: " + n);
+            })
+
+            /*
+            Mall:
+You head over to the mall with Alice.
+
+\"You're already so pretty, but I think a makeover would be so fun!\"
+
+> Look at clothes
+> Look at makeup
+> Look at game store
+> Eat some food
+
+Clothes:
+\"We can get anything you want\" Alice says, gesturing at the wide variety of clothing stores. \"What do you want?\"
+
+> plain and boring
+> Bright and colorful
+> Dark and moody
+> Clown
+
+
+
+Makeup:
+\"This place has so many options\" Alice says excitedly
+
+\"What look are you going for\"
+
+> Simple and natural
+> Like a drag queen
+> Like a clown (TODO special interaction with Ronald)
+
+Simple:
+You buy some blush and nice lipstick.
+
+Alice leads you to a bench by the hand, and starts opening up the containers of makeup. \"You're going to look so beautiful\" she remarks as she applies it.
+
+When she's done she pulls out a mirror, and you look incredible. \"Wow\" Alice says \"you look beautiful\"
+
+Drag:
+\"Bold, and dramatic, I like it\" she remarks
+
+You buy some intense eyeshadow and lipstick with neon hues, and a fair amount of glitter.
+
+Alice leads you to a bench by the hand, and starts opening up the containers of makeup. \"You're going to look so dramatic\" she remarks as she applies it.
+
+When she's done she pulls out a mirror, revealing the exaggerated makeup \"I love it\" she says, \"it shows off your beauty\"
+
+Clown:
+\"You'll be the prettiest clown ever\" she remarks.
+
+You buy a number of face paints in white, red, and yellow. Unfortunately the store was fresh out of red clown noses.
+
+Alice leads you to a bench by the hand, and starts opening up tubes of face paint. You can smell the thick paint as she applies it to your face.
+
+When she's done she pulls out a mirror, revealing a face so beautifully painted it would put Bozo to shame. \"I love it\" she says, \"it matches your personality perfectly\"
+
+Game store:
+You enter the game store (name? TODO) and look around. There's tons of shelves with board games, video games, cards, and even a few buckets of dice of every color and shape. There is a door in the back with a sign that says \"GAME ROOM\" above it.
+
+> enter the door
+> Look at the dice
+> Leave
+
+Dice: (TODO move to elsewhere in the mall?)
+You look at the dice of various hues of plastic. You find one that looks unusual.
+
+It's surface is opalescent white, almost like a pearl. But it's rather heavy for its size. It's a d20, but none of the faces have any symbols on them.
+
+> keep it
+> Leave it
+
+Inside the room is a large circular table with a bunch of dice and sheets of paper. Looks like some kind of table top game.
+
+You glance at one of the sheets, it looks like dungeons and dragons.
+
+> (if you have the die) you feel a vibration in your pocket
+> Leave
+
+You take out the die from earlier and examine it. It seems to be emitting a high pitched ring.
+
+> roll it and see what happens
+> Leave
+
+You roll the die on the table, it begins to spin like a top on the table, spinning faster and faster. It emits beams of light that flash across the room like a disco ball. It emits a warbling sound that pulses faster and faster, until eventually the sound and light become so intense that it drowns out everything else
+
+Then, you find yourself on a ship that appears to be flying through space. A small potted plant with limbs made of roots walls over to you. It says in a high pitched voice \"Hello! And welcome to The Chimera!\"
+
+> \"huh?\"
+
+\"This is our ship! And I am Peepo\"
+
+((Hey Alex, I've got a really weird question but please humor me, it'll be very funny.
+In the campaign, let's say you wanted to kill off / get rid of a minor character that no one really cares about. For whatever reason, you want them gone as quickly as possible so the story can move on without them. What event would you cause in universe to get rid of them))
+
+Events take place, eventually Bella is killed or removed from the world
+
+Returning to \"reality\":
+You fall to the ground with a thud, you're back in the game room, holding the strange die from earlier.
+
+
+
+
+
+
+
+
+
+
+
+
+Clothes 
+Makeup
+Food
+
+Leave-the-mall 
+“Well, Bella, why don’t we go back to my house and do a little fashion show? I’m sure my family would love to see your new outfit.” You start to sputter out a protest but Alice starts laughing before you can get even one full word out. “No, no, I know you would hate that. We’ll save that for a special day later on,” she says, winking. You let out a sigh of relief, but your stomach still clenches at the thought of a future fashion show. 
+
+“We can just relax, NETFLIX and chill, that kind of thing.” Alice continues, linking her arm with yours. “Come on — I’m sure you’re exhausted after all this wonderful shopping.”
+
+Options:
+Go back to Alice’s house 
+
+Go-to-Cullen-House
+You slide into the passenger’s seat of Alice’s shiny yelow convertible. It’s a little ostentatious for your taste. Alice flings the shopping bags onto the rear seats and jumps in beside you. 
+
+She looks spaced out for a moment before grinning, turning the key, and gunning the convertible out of the parking space. You grab onto the door handle for dear  as she drifts around the corner and onto the main road. 
+
+“Alice, don’t you think you should slow down?!” You yell over the sound of the rushing wind. 
+
+Alice laughs again, shaking head a little as she chirps out, “Nah, Bella, don’t worry! We’ll be fine. There’s no cops on the way and the traffic isn’t too bad — we’ll get home in just a jiffy!” She swerves between traffic with ease. 
+
+She seems like a good enough driver that you don’t think you’ll die in a fiery inferno, but you’re not convinced. You hold on tighter to the handle. 
+
+True to her word, Alice pulls into the Cullen garage a short 20 minutes later. The drive from Port Angeles usually takes an hour. 
+
+Alice bustles you and the bags out of the car and into the main hallway of the house. “What do you want to do first?”
+
+Options:
+Bathroom — you have to anxiety pee after the drive you just survived 
+Alice’s bedroom — you want to relax
+
+Bathroom
+
+“Could I use your restroom real quick, Alice?” 
+
+“Oh! Sure, Bella! We stocked it up with all the human products you could need. It’s the 2nd door on the right, down that way.” She points.
+
+You had actually been a little worried that the Cullen’s wouldn’t have any toilet paper. Do vampires shit? You didn’t think so. 
+
+“Great, thank you so much.” You start towards the bathroom as Alice zips upstairs with the shopping bags.
+
+Options: 
+Use the bathroom
+Snoop around the other doors
+
+Use-bathroom
+
+The bathroom is modern, large, and immaculately clean. The concrete floor shines in a way that suggests a recent polish — you think you could probably see your reflection in it. 
+
+You quickly glance at the mirror, then turn and face it head-on. You’re begrudgingly pleased with how your makeup turned out. You run your hands over your wind-blown hair in an attempt to calm it. Alice would probably say your hair looks “bohemian chic”, but that’s not really your style.
+
+Once your hair is in a more respectable state, you turn and face the toilet. Like many rich people’s houses, the Cullens have their toilets tucked into enclosed wash closets. Their’s is a little unusual — the walls are all glass. What’s the point? You think to yourself, frowning. Weirdly enough, there’s an upholsterer chair in the bathroom that directly faces the glass-enclosed toilet. Rich people are strange. 
+
+You take care of your business and leave the bathroom. Where do you go?
+
+Upstairs to Alice’s room 
+Snoop around the other doors.
+
+Snoop-around
+
+You stop just outside the bathroom door. You glance around the hallway, checking to see if anyone else is around. Seeing no-one, you decide that it’s only expected that you do a little snooping. 
+
+You open the doors along the hallway one by one. The first door you open contains sports attire and various equipment. There’s rows upon rows of various balls, clubs, bats, and oddly, a row of whips. 
+
+You step closer and notice that there’s various leather bands in a bin next to the row of whips.You frown, trying to think why someone would need so many whips and various leather goods. Maybe Jasper learned to whip competitively when he was growing up in the south. You don’t really want to think about the implications behind that. You leave the room quickly.
+
+You open three of the last four doors in quick progression. They’re unremarkable — more storage, mostly. One room is filled floor to ceiling with toilet paper. You wonder if vampires know how much toilet paper the average human needs. What did they even use for toilet paper when the Cullens were human? You wonder, examining the tower of toilet paper. Leaves? Pages of heretical texts condemned by the church? 
+
+The last door, the one closest to the garage, is locked. You hold your ear against the door, trying to quiet your hearbeat so you can hear what’s inside. Silence answers you, until, out of no-where, you hear a clown horn. Surprised, you drawn in your breath sharply. The sound ends before you can really process it, and even though you wait outside the door for a few moments more, you don’t hear anything else. 
+
+Options:
+Go to Alice’s room
+
+Alice-room
+
+You make your way up the stairs slowly, observing the artwork on the walls as you go. There’s some kind of ombre design created with graduation caps taking up most of the wall space. There must be a couple hundred graduation caps included in the piece.
+
+Alice pops her head around the corner at the top of the stairs. “Bella! Over here.” You startle, losing your footing and begin to fall backwards down the stairs. Alice is there betore you move more than an inch towards your certain death or disfigurement, grabbing your arm firmly but gently as her other arm comes to wrap around your waist. “Whoah, Bella! You’re so silly. It’s just little ole me.” She smiles at you as she walks you up the stairs and down the hallway to the right, keeping her arms around you as you go.
+
+You enter her room, decorated with yellow Chinoiserie wallpaper and robin’s egg blue upholstery on the four poster bed in the center of the room and the small seating area by the window. You’d expected a more modern design like the rest of the Cullen’s house, but the more traditional, bold design of the room suits her. 
+
+“Ok! Here we are.” Alice smiles at you again as she unwrapping herself from around you. You feel a complicated feeling as she pulls away from you. “I hope you like it! I decorated it myself. The wallpaper is hand printed in France, and the bed is antique from Italy.” 
+
+She plops down at the end of the bed, bouncing a little as her weight settles. She pats the space next to her invitingly. “So, what would you like to do?”
+
+Options:
+Netflix and chill
+Netflix and actually just chill
+
+Netflix-and-chill
+
+You sit down next to Alice. The bed is plush, the most luxurious mattress you’ve ever felt covered by the smoothest silk sheets. You look down to where your fingers are spread out on the mattress, sinking into the plush. Your fingers are nearly touching Alice’s. It would only take a millimeter to breach the distance between. 
+
+“I think… I think a nature documentary would be good?” You ask hestitantily. You’re sure Alice is more of a Love Island kind of girl, but you’ve always found the sound of Obama’s voice titillating. 
+
+“Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.” 
+
+Bella gets dirty 
+
+Netflix-just-chill
+
+“I’m pretty tired. I think my brain can only handle watching a few episodes of something,” You reply.
+
+“Sure!” Alice reaches across the bedspread 
+
+Esme comes in with a fresh smoothie for Bella. She’s a gardening enthusiast and is so pleased to finally have someone to try out home-grown cooking with. Usually she donated her fresh produce to the food pantry or the elementary school. 
+
+Bella spills a smoothie on herself. 
+
+Grimace-Key
+Alice leaves the room to get a warm, wet cloth to wipe you down with. Laying there, you spot something shining out of the corner of your eye. Bookshelf. Iconic McDonald’s double arches. Huh. I didn’t know Alice was a McDonald’s fan. That’s so capitalist of her. Attached to the arches is a key. Without thinking, you grab the key and stuff it in your backpack. You hear Alice remark something to Esme in the hallway, and hurry back to the bed to lie innocently in your mess again. 
+*/
             // Here it is: ®
         </script>
     </footer>
