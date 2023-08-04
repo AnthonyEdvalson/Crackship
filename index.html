@@ -864,10 +864,27 @@
                     "header": "The Cullen's Upstairs",
                     "text": "You walk up the stairs to the second floor, and find a long hallway with several doors.",
                     "options": [
+                        { "text": "Go to the left closet", "actions": "go:cullen-closet" },
+                        { "text": "Go to the right closet", "actions": "go:cullen-closet-2" },
                         { "text": "Go to Edward's room", "actions": "go:cullen-edward-room" },
+                        { "text": "Go to Alice's room", "actions": "go:cullen-alice-room-locked", "condition": "alice-romance == 0" },
                         { "text": "Go to Alice's room", "actions": "go:cullen-alice-room", "condition": "alice-romance > 0" },
                         { "text": "Go downstairs", "actions": "go:cullen-hub" }
                         //TODO
+                    ]
+                },
+                "cullen-closet": {
+                    "header": "Closet",
+                    "text": "It contains sports attire and various equipment. There's rows upon rows of various balls, clubs, bats, and oddly, a row of whips.\n\nYou step closer and notice that there are various leather bands in a bin next to the row of whips. You frown, trying to think why someone would need so many whips and various leather goods. Maybe Jasper learned to whip competitively when he was growing up in the south. You don't really want to think about the implications behind that. You leave the room quickly.",
+                    "options": [
+                        { "text": "Back", "actions": "go:cullen-upstairs" }
+                    ]
+                },
+                "cullen-closet-2": {
+                    "header": "Closet",
+                    "text": "The room is filled floor to ceiling with toilet paper. You wonder if vampires know how much toilet paper the average human needs. What did they even use for toilet paper when the Cullens were human? You wonder, examining the tower of toilet paper. Leaves? Pages of heretical texts condemned by the church?",
+                    "options": [
+                        { "text": "Back", "actions": "go:cullen-upstairs" }
                     ]
                 },
                 "cullen-edward-room": {
@@ -917,10 +934,11 @@
                         { "text": "I'm... done", "actions": "go:cullen-edward-room" },
                     ]
                 },
-                "cullen-alice-room": {
+                "cullen-alice-room-locked": {
                     "header": "Alice's Room",
-                    "text": "TODO",
+                    "text": "A sign on the door with floral print tells you that this is Alice's room. The door appears to be locked.",
                     "options": [
+                        { "text": "Back", "actions": "go:cullen-upstairs" },
                     ]
                 },
                 "cullen-basement": {
@@ -934,7 +952,7 @@
                 },
                 "cullen-basement-locked": {
                     "header": "Locked Door",
-                    "text": "You try to open the door, but it's locked. You'll need a key to open it.",
+                    "text": "You try to open the door, but it's locked. You hold your ear against the door, trying to quiet your heartbeat so you can hear what's inside. Silence answers you, until, out of nowhere, you hear the distant honk of a clown horn. Surprised, you draw in your breath sharply. The sound ends before you can really process it, and even though you wait outside the door for a few moments more, you don't hear anything else.",
                     "options": [
                         { "text": "Back", "actions": "set:seen-basement,go:cullen-basement" },
                     ]
@@ -1168,7 +1186,7 @@
                         { "text": "\"Grimace had two arms\"", "actions": "go:funhouse-quiz-q3-what" },
                         { "text": "\"Grimace had four arms\"", "actions": "go:funhouse-quiz-q3-what" },
                         { "text": "\"Grimace had six arms\"", "actions": "go:funhouse-quiz-q3-what" },
-                        { "text": "\"Grimace had eight arms\"", "actions": "go:funhouse-quiz-what" },
+                        { "text": "\"Grimace had eight arms\"", "actions": "go:funhouse-quiz-q3-what" },
                         { "text": "\"You know Grimace?\"", "actions": "go:funhouse-quiz-q3-what" }
                     ]
                 },
@@ -1283,11 +1301,267 @@
                         { "text": "Run away", "actions": "go:TODO" }
                     ]
                 },
-
                 "mall-hub": {
-
+                    "header": "The Mall",
+                    "text": "You're at the mall with Alice.\n\n\"You're already so pretty, but I think a makeover would be so fun!\"",
+                    "options": [
+                        { "text": "Look at clothes", "actions": "go:mall-clothes" },
+                        { "text": "Look at makeup", "actions": "go:mall-makeup" },
+                        //TODO { "text": "Look at game store", "actions": "go:mall-games" },
+                        { "text": "Eat some food", "actions": "go:mall-food" },
+                        { "text": "Leave", "actions": "go:mall-leave", "condition": "clothes > 0,makeup > 0,mall-food > 0" }
+                    ]
+                },
+                "mall-clothes": {
+                    "header": "Clothes",
+                    "text": "\"They have a bit of everything here\" Alice says, gesturing at the wide variety of clothing stores. \"What do you want?\"",
+                    "options": [
+                        { "text": "Something cute", "actions": "go:mall-clothes-cute" },
+                        { "text": "Something sexy", "actions": "go:mall-clothes-sexy" },
+                        { "text": "Something punk", "actions": "go:mall-clothes-punk" },
+                        { "text": "Something formal", "actions": "go:mall-clothes-formal" },
+                        { "text": "Clown", "actions": "go:mall-clothes-clown" },
+                    ]
+                },
+                "mall-clothes-cute": {
+                    "header": "Cute Clothes",
+                    "text": "You find a cute outfit, a pink dress with a white bow. You try it on, and it fits perfectly. You look in the mirror, and you look adorable!\n\n\"Bella! You look so cute!\" Alice says, \"I absolutely love it!\"",
+                    "options": [
+                        { "text": "\"Thanks!\"", "actions": "set:clothes;1,go:mall-hub" },
+                    ]
+                },
+                "mall-clothes-sexy": {
+                    "header": "Sexy Clothes",
+                    "text": "You opt for a sexy outfit, a black leather mini dress. Trying it on, you have to admit that it suits you very well. As you step out of the dressing room, Alice's jaw drops. \n\n\"Wow! You look absolutely stunning!\" she exclaims.",
+                    "options": [
+                        { "text": "\"I'll take it!\"", "actions": "set:clothes;2,go:mall-hub" },
+                    ]
+                },
+                "mall-clothes-punk": {
+                    "header": "Punk Clothes",
+                    "text": "You choose a punk outfit, including a leather jacket, ripped jeans, and band T-shirt. Alice grins approvingly as you emerge from the dressing room.\n\n\"That looks perfect on you! You have a punk spirit for sure!\"",
+                    "options": [
+                        { "text": "\"I feel edgy!\"", "actions": "set:clothes;3,go:mall-hub" },
+                    ]
+                },
+                "mall-clothes-formal": {
+                    "header": "Formal Clothes",
+                    "text": "You try on a crisp white shirt, black trousers, and a tie. As you step out from the changing room, Alice claps her hands. \n\n\"You look like a true professional,\" she compliments.",
+                    "options": [
+                        { "text": "\"I feel very elegant.\"", "actions": "set:clothes;4,go:mall-hub" },
+                    ]
+                },
+                "mall-clothes-clown": {
+                    "header": "Clown Clothes",
+                    "text": "You examine a goofy clown outfit, complete with oversized shoes, a polka-dot jumpsuit, and even a red nose. Alice bursts out laughing when you emerge from the changing room. \n\n\"That is... unexpected, but you rock it!\"",
+                    "options": [
+                        { "text": "\"It's something different, right?\"", "actions": "set:clothes;5,go:mall-hub" },
+                    ]
+                },
+                "mall-makeup": {
+                    "header": "Makeup",
+                    "text": "\"Let's get some makeup!\" Alice announces, leading you towards a cosmetics store. \"Looking to try something bold or something subtle?\"",
+                    "options": [
+                        { "text": "Something bold", "actions": "go:mall-makeup-bold" },
+                        { "text": "Something subtle", "actions": "go:mall-makeup-subtle" },
+                        { "text": "Something sparkly", "actions": "go:mall-makeup-sparkly" },
+                        { "text": "Something natural", "actions": "go:mall-makeup-natural" },
+                        { "text": "Clown", "actions": "go:mall-makeup-clown" },
+                    ]
+                },
+                "mall-makeup-bold": {
+                    "header": "Bold Makeup",
+                    "text": "Alice helps you put together a bold look, with bright red lipstick, smokey eyeshadow, and intense eyeliner. When you look in the mirror, you're taken aback by the transformation. \n\n\"Wow, this is... dramatic!\" You say. Alice grins, \"It looks great on you!\"",
+                    "options": [
+                        { "text": "\"I'm on board!\"", "actions": "set:makeup;1,go:mall-hub" },
+                    ]
+                },
+                "mall-makeup-subtle": {
+                    "header": "Subtle Makeup",
+                    "text": "Alice helps you choose a more subtle look. A touch of blush, some nude lipstick, and a light make-up base. When you look in the mirror, you're surprised at how much of a difference the subtle changes can make. \n\n\"You look elegant,\" Alice says softly, staring at you with a smile.",
+                    "options": [
+                        { "text": "\"Thank you, Alice!\"", "actions": "set:makeup;2,go:mall-hub" },
+                    ]
+                },
+                "mall-makeup-sparkly": {
+                    "header": "Sparkly Makeup",
+                    "text": "Alice aids you in picking out sparkling eyeshadow and a glossy lipstick, sprinkling a dash of glitter on your cheekbones for good measure. When you look in the mirror, you're thoroughly pleased with the results. \"Sparkly suits you,\" Alice appraises with a smirk.",
+                    "options": [
+                        { "text": "\"I feel like a star!\"", "actions": "set:makeup;3,go:mall-hub" },
+                    ]
+                },
+                "mall-makeup-natural": {
+                    "header": "Natural Makeup",
+                    "text": "Alice guides you towards the products that will give you a natural and fresh look - some neutral toned eyeshadow, tinted lip balm, and a light BB cream. As you glance in the mirror, you find the look characteristically flattering. \"There's such beauty in simplicity,\" Alice commends.",
+                    "options": [
+                        { "text": "\"I like this natural look, it feels fresh!\"", "actions": "set:makeup;4,go:mall-hub" },
+                    ]
+                },
+                "mall-makeup-clown": {
+                    "header": "Clown Makeup",
+                    "text": "Alice chuckles as she helps you apply red circles on your cheeks, blue eyeshadow, and an exaggerated red lips, synonymous with the classic clown style. When you look in the mirror, you can't help but laugh at your own reflection.\n\n\"That's definitely a choice,\" Alice comments, snickering.",
+                    "options": [
+                        { "text": "\"It's all about trying something new, right?\"", "actions": "set:makeup;5,go:mall-hub" },
+                    ]
+                },
+                "mall-food": {
+                   "header": "Food Court",
+                    "text": "\"Let's eat,\" says Alice, leading you towards the food court. \"Got any cravings or flavours in mind?\"",
+                    "options": [
+                        { "text": "Something spicy", "actions": "go:mall-food-spicy" },
+                        { "text": "Something sweet", "actions": "go:mall-food-sweet" },
+                        { "text": "Something savory", "actions": "go:mall-food-savory" },
+                        { "text": "Something healthy", "actions": "go:mall-food-healthy" },
+                        { "text": "Junk Food", "actions": "go:mall-food-junk" }
+                    ]
+                },
+                "mall-food-spicy": {
+                    "header": "Spicy Food",
+                    "text": "You end up at a Mexican place, ordering spicy tacos. Alice watches with amusement as you dig in, your mouth is burning from all the spice, but it tastes very good\n\n\"Hot enough for you?\" Alice teases.",
+                    "options": [
+                        { "text": "\"I'm fine! Just need some more water...\" ", "actions": "set:mall-food,go:mall-hub" },
+                    ]
+                },
+                "mall-food-sweet": {
+                    "header": "Sweet Food",
+                    "text": "You head to a little bakery and buy an assortment of pastries. Alice smiles as you bite into a cream-filled donut. She steals a bite, but get a dab of powdered sugar on her nose. You both laugh.",
+                    "options": [
+                        { "text": "\"I'm glad you're enjoying yourself!\"", "actions": "set:mall-food,go:mall-hub" },
+                    ]
+                },
+                "mall-food-savory": {
+                    "header": "Savory Food",
+                    "text": "You opt for a pizzeria, ordering a large with all your favorite toppings. Alice laughs as you both struggle to finish the enormous pizza. \"A challenge for the ages!\" she exclaims, merrily.",
+                    "options": [
+                        { "text": "\"I'm stuffed!\"", "actions": "set:mall-food,go:mall-hub" },
+                    ]
+                },
+                "mall-food-healthy": {
+                    "header": "Healthy Food",
+                    "text": "You choose a salad bar, piling your plate high with greens and veggies. Alice smiles, approvingly. \"I like that you're health conscious,\" she admires, digging into her own salad.",
+                    "options": [
+                        { "text": "\"Should balance it out, right?\"", "actions": "set:mall-food,go:mall-hub" },
+                    ]
+                },
+                "mall-food-junk": {
+                    "header": "Junk Food",
+                    "text": "You head towards a fast-food joint and order a burger and fries. Alice playfully steals a few of your fries while you're not looking. She laughs as you pout at her. \"I'm sorry, I couldn't resist!\"",
+                    "options": [
+                        { "text": "\"It's okay, I'll just steal some of yours!\"", "actions": "set:mall-food,go:mall-hub" },
+                    ]
                 },
 
+                "mall-leave": {
+                    "header": "Leave the Mall",
+                    "text": "\"Well, Bella, why don't we go back to my house and do a little fashion show? I'm sure my family would love to see your new outfit.\" You start to sputter out a protest but Alice starts laughing before you can get even one full word out. \"No, no, I know you would hate that. We'll save that for a special day later on,\" she says, winking. You let out a sigh of relief, but your stomach still clenches at the thought of a future fashion show.\n\n\"We can just relax, NETFLIX and chill, that kind of thing.\" Alice continues, linking her arm with yours. \"Come on — I'm sure you're exhausted after all this wonderful shopping.\"",
+                    "options": [
+                        { "text": "Go back to Alice's house", "actions": "go:alice-drives" }
+                    ]
+                },
+                "alice-drives": {
+                    "header": "Alice Drives You Home",
+                    "text": "You slide into the passenger's seat of Alice's shiny yellow convertible. It's a little ostentatious for your taste. Alice flings the shopping bags onto the rear seats and jumps in beside you.\n\nShe looks spaced out for a moment before grinning, turning the key, and gunning the convertible out of the parking space.",
+                    "options": [
+                        { "text": "Hold on tight", "actions": "go:alice-drives-2" },
+                    ]
+                },
+                "alice-drives-2": {
+                    "header": "Alice Drives You Home",
+                    "text": "You grab onto the door handle for dear life as Alice drifts around the corner and onto the main road.\n\n\"Alice, don't you think you should slow down?!\" You yell over the sound of the rushing wind.\n\nAlice laughs again, shaking her head a little as she chirps out, \"Nah, Bella, don't worry! We'll be fine. There's no cops on the way and the traffic isn't too bad — we'll get home in just a jiffy!\" She swerves between traffic with ease.",
+                    "options": [
+                        { "text": "Hold on tighter", "actions": "go:alice-drives-3" },
+                    ]
+                },
+                "alice-drives-3": {
+                    "header": "Alice Drives You Home",
+                    "text": "She seems like a good enough driver that you don't think you'll die in a fiery inferno, but you're not convinced. You hold on tighter to the handle.\n\nTrue to her word, Alice pulls into the Cullen garage a short 20 minutes later. The drive from Port Angeles usually takes an hour.",
+                    "options": [
+                        { "text": "Get out of the car", "actions": "go:alice-drives-4" },
+                    ]
+                },
+                "alice-drives-4": {
+                    "header": "Alice Drives You Home",
+                    "text": "Alice bustles you and the bags out of the car and into the main hallway of the house. \"What do you want to do first?\"",
+                    "options": [
+                        { "text": "Use the bathroom", "actions": "go:cullen-bathroom" },
+                        { "text": "Go to Alice's room", "actions": "go:alice-room-enter" }
+                    ]
+                },
+                "cullen-bathroom": {
+                    "header": "Bathroom",
+                    "text": "\"Could I use your restroom real quick, Alice?\"\n\n\"Oh! Sure, Bella! We stocked it up with all the human products you could need. It's the door on the right, down that way,\" she points.\n\nYou had actually been a little worried that the Cullen's wouldn't have any toilet paper. Do vampires shit? You didn't think so.\n\n\"Great, thank you so much.\" You start towards the bathroom as Alice zips upstairs with the shopping bags.",
+                    "options": [
+                        { "text": "Use the bathroom", "actions": "go:use-bathroom" }
+                    ]
+                },
+                "use-bathroom": {
+                    "header": "Use the Bathroom",
+                    "text": "The bathroom is modern, large, and immaculately clean. The concrete floor shines in a way that suggests a recent polish — you think you could probably see your reflection in it.\n\nYou quickly glance at the mirror, then turn and face it head-on. You're begrudgingly pleased with how your makeup turned out. You run your hands over your wind-blown hair in an attempt to calm it. Alice would probably say your hair looks \"bohemian chic\", but that's not really your style.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:use-bathroom-2" }
+                    ]
+                },
+                "use-bathroom-2": {
+                    "header": "Use the Bathroom",
+                    "text": "Once your hair is in a more respectable state, you turn and face the toilet. Like many rich people's houses, the Cullens have their toilets tucked into enclosed wash closets. Their's is a little unusual — the walls are all glass. What's the point? You think to yourself, frowning. Weirdly enough, there's an upholsterer chair in the bathroom that directly faces the glass-enclosed toilet. Rich people are strange.\n\nYou take care of your business and leave the bathroom.",
+                    "options": [
+                        { "text": "Go to Alice's room", "actions": "go:alice-room-enter" }
+                    ]
+                },
+                "alice-room-enter": {
+                    "header": "Alice's Room Entrance",
+                    "text": "You make your way up the stairs slowly, observing the artwork on the walls as you go. There's some kind of ombre design created with graduation caps taking up most of the wall space. There must be a couple hundred graduation caps included in the piece.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:alice-room-welcome" }
+                    ]
+                },
+                "alice-room-welcome": {
+                    "header": "Alice's Room",
+                    "text": "Alice pops her head around the corner at the top of the stairs. \"Bella! Over here.\" You startle, losing your footing and begin to fall backwards down the stairs. Alice is there before you move more than an inch towards your certain death or disfigurement, grabbing your arm firmly but gently as her other arm comes to wrap around your waist. \"Whoa, Bella! You're so silly. It's just little ole me.\" She smiles at you as she walks you up the stairs and down the hallway to the right, keeping her arms around you as you go.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:alice-room-after-date" }
+                    ]
+                },
+                "alice-room-after-date": {
+                    "header": "Alice's Room",
+                    "text": "You enter her room, decorated with yellow Chinoiserie wallpaper and robin's egg blue upholstery on the four-poster bed in the center of the room and the small seating area by the window. You'd expected a more modern design like the rest of the Cullens' house, but the more traditional, bold design of the room suits her.\n\n\"Ok! Here we are.\" Alice smiles at you again as she unwraps herself from around you. You feel a complicated feeling as she pulls away from you. \"I hope you like it! I decorated it myself. The wallpaper is hand-printed in France, and the bed is antique from Italy.\"\n\nShe plops down at the end of the bed, bouncing a little as her weight settles. She pats the space next to her invitingly. \"So, what would you like to do?\"",
+                    "options": [
+                        { "text": "Netflix and chill", "actions": "go:netflix-and-chill" },
+                        { "text": "Netflix and actually just chill", "actions": "go:netflix-just-chill" }
+                    ]
+                },
+                "cullen-alice-room": {
+                    "header": "Alice's Room",
+                    "text": "You enter her room, decorated with yellow Chinoiserie wallpaper and robin's egg blue upholstery on the four-poster bed in the center of the room and the small seating area by the window. You'd expected a more modern design like the rest of the Cullens' house, but the more traditional, bold design of the room suits her.\n\nAlice is still sitting at the end of the bed. She pats the space next to her invitingly. \"So, what would you like to do?\"",
+                    "options": [
+                        { "text": "Netflix and chill", "actions": "go:netflix-and-chill" },
+                        { "text": "Netflix and actually just chill", "actions": "go:netflix-just-chill" },
+                        { "text": "Leave", "actions": "go:cullen-upstairs" }
+                    ]
+                },
+                "netflix-and-chill": {
+                    "header": "Netflix and Chill",
+                    "text": "You sit down next to Alice. The bed is plush, the most luxurious mattress you've ever felt covered by the smoothest silk sheets. You look down to where your fingers are spread out on the mattress, sinking into the plush. Your fingers are nearly touching Alice's. It would only take a millimeter to breach the distance between.\n\n\"I think… I think a nature documentary would be good?\" You ask hesitantly. You're sure Alice is more of a Love Island kind of girl, but you've always found the sound of Obama's voice titillating.\n\n\"Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.\"",
+                    "options": [
+                        { "text": "\"I'm flattered, but let's just stick to the nature documentary for now.\"", "actions": "set:alice-romance,go:grimace-key" }
+                    ]
+                },
+                "netflix-just-chill": {
+                    "header": "Just Chill",
+                    "text": "\"I'm pretty tired. I think my brain can only handle watching a few episodes of something,\" You reply.\n\n\"Sure!\" Alice reaches across the bedspread. Esme comes in with a fresh smoothie for Bella. She's a gardening enthusiast and is so pleased to finally have someone to try out home-grown cooking with. Usually she donated her fresh produce to the food pantry or the elementary school.\n\nBella spills a smoothie on herself.",
+                    "options": [
+                        { "text": "\"Oh no, are you alright? Let me help you clean up.\"", "actions": "set:alice-romance,go:grimace-key" }
+                    ]
+                },
+                "grimace-key": {
+                    "header": "Grimace Key",
+                    "text": "Alice leaves the room to get a warm, wet cloth to wipe you down with. Laying there, you spot something shining out of the corner  of your eye. Bookshelf. Iconic McDonald's double arches. Huh. I didn't know Alice was a McDonald's fan. That's so capitalist of her. Attached to the arches is a key. Without thinking, you grab the key and stuff it in your backpack. You hear Alice remark something to Esme in the hallway, and hurry back to the bed to lie innocently in your mess again.",
+                    "options": [
+                        { "text": "\"I wonder what the key is for? I should ask Alice later.\"", "actions": "set:cullen-basement-key,go:mall-hub", "condition": "seen-basement == 0" },
+                        { "text": "\"I wonder if this opens the basement...\"", "actions": "set:cullen-basement-key,go:mall-hub", "condition": "seen-basement > 0" }
+                    ]
+                },
+                
 
                 "prom-prep": {
                     "header": "Prom Preparation",
@@ -1425,6 +1699,9 @@
                 let room = Object.entries(web)[i];
                 let name = room[0];
                 let hasExit = false;
+                if (room[1].options === undefined) {
+                    console.warn("No options for room: " + name);
+                }
                 for (let j = 0; j < room[1].options.length; j++) {
                     let option = room[1].options[j];
                     let parts = option.actions.split(",")
@@ -1458,86 +1735,12 @@
             });
             unusedNames.forEach(n => {
                 console.warn("Room has no links: " + n);
-            })
+            });
 
             /*
-            Mall:
-You head over to the mall with Alice.
-
-\"You're already so pretty, but I think a makeover would be so fun!\"
-
-> Look at clothes
-> Look at makeup
-> Look at game store
-> Eat some food
-
-Clothes:
-\"We can get anything you want\" Alice says, gesturing at the wide variety of clothing stores. \"What do you want?\"
-
-> plain and boring
-> Bright and colorful
-> Dark and moody
-> Clown
+            
 
 
-
-Makeup:
-\"This place has so many options\" Alice says excitedly
-
-\"What look are you going for\"
-
-> Simple and natural
-> Like a drag queen
-> Like a clown (TODO special interaction with Ronald)
-
-Simple:
-You buy some blush and nice lipstick.
-
-Alice leads you to a bench by the hand, and starts opening up the containers of makeup. \"You're going to look so beautiful\" she remarks as she applies it.
-
-When she's done she pulls out a mirror, and you look incredible. \"Wow\" Alice says \"you look beautiful\"
-
-Drag:
-\"Bold, and dramatic, I like it\" she remarks
-
-You buy some intense eyeshadow and lipstick with neon hues, and a fair amount of glitter.
-
-Alice leads you to a bench by the hand, and starts opening up the containers of makeup. \"You're going to look so dramatic\" she remarks as she applies it.
-
-When she's done she pulls out a mirror, revealing the exaggerated makeup \"I love it\" she says, \"it shows off your beauty\"
-
-Clown:
-\"You'll be the prettiest clown ever\" she remarks.
-
-You buy a number of face paints in white, red, and yellow. Unfortunately the store was fresh out of red clown noses.
-
-Alice leads you to a bench by the hand, and starts opening up tubes of face paint. You can smell the thick paint as she applies it to your face.
-
-When she's done she pulls out a mirror, revealing a face so beautifully painted it would put Bozo to shame. \"I love it\" she says, \"it matches your personality perfectly\"
-
-Game store:
-You enter the game store (name? TODO) and look around. There's tons of shelves with board games, video games, cards, and even a few buckets of dice of every color and shape. There is a door in the back with a sign that says \"GAME ROOM\" above it.
-
-> enter the door
-> Look at the dice
-> Leave
-
-Dice: (TODO move to elsewhere in the mall?)
-You look at the dice of various hues of plastic. You find one that looks unusual.
-
-It's surface is opalescent white, almost like a pearl. But it's rather heavy for its size. It's a d20, but none of the faces have any symbols on them.
-
-> keep it
-> Leave it
-
-Inside the room is a large circular table with a bunch of dice and sheets of paper. Looks like some kind of table top game.
-
-You glance at one of the sheets, it looks like dungeons and dragons.
-
-> (if you have the die) you feel a vibration in your pocket
-> Leave
-
-You take out the die from earlier and examine it. It seems to be emitting a high pitched ring.
 
 > roll it and see what happens
 > Leave
@@ -1557,129 +1760,6 @@ Events take place, eventually Bella is killed or removed from the world
 
 Returning to \"reality\":
 You fall to the ground with a thud, you're back in the game room, holding the strange die from earlier.
-
-
-
-
-
-
-
-
-
-
-
-
-Clothes 
-Makeup
-Food
-
-Leave-the-mall 
-“Well, Bella, why don’t we go back to my house and do a little fashion show? I’m sure my family would love to see your new outfit.” You start to sputter out a protest but Alice starts laughing before you can get even one full word out. “No, no, I know you would hate that. We’ll save that for a special day later on,” she says, winking. You let out a sigh of relief, but your stomach still clenches at the thought of a future fashion show. 
-
-“We can just relax, NETFLIX and chill, that kind of thing.” Alice continues, linking her arm with yours. “Come on — I’m sure you’re exhausted after all this wonderful shopping.”
-
-Options:
-Go back to Alice’s house 
-
-Go-to-Cullen-House
-You slide into the passenger’s seat of Alice’s shiny yelow convertible. It’s a little ostentatious for your taste. Alice flings the shopping bags onto the rear seats and jumps in beside you. 
-
-She looks spaced out for a moment before grinning, turning the key, and gunning the convertible out of the parking space. You grab onto the door handle for dear  as she drifts around the corner and onto the main road. 
-
-“Alice, don’t you think you should slow down?!” You yell over the sound of the rushing wind. 
-
-Alice laughs again, shaking head a little as she chirps out, “Nah, Bella, don’t worry! We’ll be fine. There’s no cops on the way and the traffic isn’t too bad — we’ll get home in just a jiffy!” She swerves between traffic with ease. 
-
-She seems like a good enough driver that you don’t think you’ll die in a fiery inferno, but you’re not convinced. You hold on tighter to the handle. 
-
-True to her word, Alice pulls into the Cullen garage a short 20 minutes later. The drive from Port Angeles usually takes an hour. 
-
-Alice bustles you and the bags out of the car and into the main hallway of the house. “What do you want to do first?”
-
-Options:
-Bathroom — you have to anxiety pee after the drive you just survived 
-Alice’s bedroom — you want to relax
-
-Bathroom
-
-“Could I use your restroom real quick, Alice?” 
-
-“Oh! Sure, Bella! We stocked it up with all the human products you could need. It’s the 2nd door on the right, down that way.” She points.
-
-You had actually been a little worried that the Cullen’s wouldn’t have any toilet paper. Do vampires shit? You didn’t think so. 
-
-“Great, thank you so much.” You start towards the bathroom as Alice zips upstairs with the shopping bags.
-
-Options: 
-Use the bathroom
-Snoop around the other doors
-
-Use-bathroom
-
-The bathroom is modern, large, and immaculately clean. The concrete floor shines in a way that suggests a recent polish — you think you could probably see your reflection in it. 
-
-You quickly glance at the mirror, then turn and face it head-on. You’re begrudgingly pleased with how your makeup turned out. You run your hands over your wind-blown hair in an attempt to calm it. Alice would probably say your hair looks “bohemian chic”, but that’s not really your style.
-
-Once your hair is in a more respectable state, you turn and face the toilet. Like many rich people’s houses, the Cullens have their toilets tucked into enclosed wash closets. Their’s is a little unusual — the walls are all glass. What’s the point? You think to yourself, frowning. Weirdly enough, there’s an upholsterer chair in the bathroom that directly faces the glass-enclosed toilet. Rich people are strange. 
-
-You take care of your business and leave the bathroom. Where do you go?
-
-Upstairs to Alice’s room 
-Snoop around the other doors.
-
-Snoop-around
-
-You stop just outside the bathroom door. You glance around the hallway, checking to see if anyone else is around. Seeing no-one, you decide that it’s only expected that you do a little snooping. 
-
-You open the doors along the hallway one by one. The first door you open contains sports attire and various equipment. There’s rows upon rows of various balls, clubs, bats, and oddly, a row of whips. 
-
-You step closer and notice that there’s various leather bands in a bin next to the row of whips.You frown, trying to think why someone would need so many whips and various leather goods. Maybe Jasper learned to whip competitively when he was growing up in the south. You don’t really want to think about the implications behind that. You leave the room quickly.
-
-You open three of the last four doors in quick progression. They’re unremarkable — more storage, mostly. One room is filled floor to ceiling with toilet paper. You wonder if vampires know how much toilet paper the average human needs. What did they even use for toilet paper when the Cullens were human? You wonder, examining the tower of toilet paper. Leaves? Pages of heretical texts condemned by the church? 
-
-The last door, the one closest to the garage, is locked. You hold your ear against the door, trying to quiet your hearbeat so you can hear what’s inside. Silence answers you, until, out of no-where, you hear a clown horn. Surprised, you drawn in your breath sharply. The sound ends before you can really process it, and even though you wait outside the door for a few moments more, you don’t hear anything else. 
-
-Options:
-Go to Alice’s room
-
-Alice-room
-
-You make your way up the stairs slowly, observing the artwork on the walls as you go. There’s some kind of ombre design created with graduation caps taking up most of the wall space. There must be a couple hundred graduation caps included in the piece.
-
-Alice pops her head around the corner at the top of the stairs. “Bella! Over here.” You startle, losing your footing and begin to fall backwards down the stairs. Alice is there betore you move more than an inch towards your certain death or disfigurement, grabbing your arm firmly but gently as her other arm comes to wrap around your waist. “Whoah, Bella! You’re so silly. It’s just little ole me.” She smiles at you as she walks you up the stairs and down the hallway to the right, keeping her arms around you as you go.
-
-You enter her room, decorated with yellow Chinoiserie wallpaper and robin’s egg blue upholstery on the four poster bed in the center of the room and the small seating area by the window. You’d expected a more modern design like the rest of the Cullen’s house, but the more traditional, bold design of the room suits her. 
-
-“Ok! Here we are.” Alice smiles at you again as she unwrapping herself from around you. You feel a complicated feeling as she pulls away from you. “I hope you like it! I decorated it myself. The wallpaper is hand printed in France, and the bed is antique from Italy.” 
-
-She plops down at the end of the bed, bouncing a little as her weight settles. She pats the space next to her invitingly. “So, what would you like to do?”
-
-Options:
-Netflix and chill
-Netflix and actually just chill
-
-Netflix-and-chill
-
-You sit down next to Alice. The bed is plush, the most luxurious mattress you’ve ever felt covered by the smoothest silk sheets. You look down to where your fingers are spread out on the mattress, sinking into the plush. Your fingers are nearly touching Alice’s. It would only take a millimeter to breach the distance between. 
-
-“I think… I think a nature documentary would be good?” You ask hestitantily. You’re sure Alice is more of a Love Island kind of girl, but you’ve always found the sound of Obama’s voice titillating. 
-
-“Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.” 
-
-Bella gets dirty 
-
-Netflix-just-chill
-
-“I’m pretty tired. I think my brain can only handle watching a few episodes of something,” You reply.
-
-“Sure!” Alice reaches across the bedspread 
-
-Esme comes in with a fresh smoothie for Bella. She’s a gardening enthusiast and is so pleased to finally have someone to try out home-grown cooking with. Usually she donated her fresh produce to the food pantry or the elementary school. 
-
-Bella spills a smoothie on herself. 
-
-Grimace-Key
-Alice leaves the room to get a warm, wet cloth to wipe you down with. Laying there, you spot something shining out of the corner of your eye. Bookshelf. Iconic McDonald’s double arches. Huh. I didn’t know Alice was a McDonald’s fan. That’s so capitalist of her. Attached to the arches is a key. Without thinking, you grab the key and stuff it in your backpack. You hear Alice remark something to Esme in the hallway, and hurry back to the bed to lie innocently in your mess again. 
 */
             // Here it is: ®
         </script>
