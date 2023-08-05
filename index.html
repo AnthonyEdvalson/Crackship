@@ -126,12 +126,20 @@
                 content: "• ";
             }
 
-            .restart {
-                width: 70px;
+            .bottom {
                 position: absolute;
                 bottom: 10px;
                 right: 10px;
+                left: 10px;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
+            .bottom button {
+                width: 70px;
                 text-align: center;
+                margin-left: 10px;
             }
 
             .spacer {
@@ -175,7 +183,11 @@
             </div>
             <div class="spacer"></div>
             <div id="inventory" class="inventory"></div>
-            <button class="restart" onclick="restart()">Restart</button>
+            <div class="bottom">
+                <button onclick="save('1')">Save</button>
+                <button onclick="load('1')">Load</button>
+                <button onclick="restart()">Restart</button>
+            </div>
         </div>
     </body>
     <footer>
@@ -200,7 +212,7 @@
                 body = document.getElementById("body");
                 inventoryDiv = document.getElementById("inventory");
                 textDiv = document.getElementById("text");
-                load();
+                load("auto");
             });
 
             function choose(option) {
@@ -227,6 +239,7 @@
                     }
                     if (command == "restart") {
                         restart();
+                        newState = "start";
                     }
                 }
                 setState(newState); // Refresh UI
@@ -292,7 +305,7 @@
                 if (newState != state) {
                     fadeOut();
                 }
-                save();
+                save("auto");
             }
 
             function fadeOut() {
@@ -342,17 +355,17 @@
                 }
             }
 
-            function save() {
+            function save(slot) {
                 let save = {
                     "state": state,
                     "inventory": inventory
                 };
-                localStorage.setItem("save", JSON.stringify(save));
+                localStorage.setItem("save-" + slot, JSON.stringify(save));
                 console.log(save)
             }
 
-            function load() {
-                let save = JSON.parse(localStorage.getItem("save"));
+            function load(slot) {
+                let save = JSON.parse(localStorage.getItem("save-" + slot));
                 console.log(save)
                 if (save != null) {
                     state = save.state;
@@ -364,7 +377,7 @@
             }
 
             function restart() {
-                localStorage.removeItem("save");
+                localStorage.removeItem("save-auto")
                 inventory = {};
                 setState("start");
             }
@@ -398,7 +411,7 @@
                 },
                 "you-are-cedric": {
                     "header": "\"Cedric Diggory\"",
-                    "text": "He looked at me, confused. \"Huh?\"\n\n\"Yeah, Voldemort killed you in Goblet of Fire, right? Also, pretty sure you were sorted into Hufflepuff.\"\n\n\"No Bella, that's the wrong movie, we're doing Twilight, you know, vampires and shit.\"\n\n\"Oh, sorry about that\" I apologized and decided to go back and pick a less rediculous option.",
+                    "text": "He looked at me, confused. \"Huh?\"\n\n\"Yeah, Voldemort killed you in Goblet of Fire, right? Also, pretty sure you were sorted into Hufflepuff.\"\n\n\"No Bella, that's the wrong movie, we're doing Twilight, you know, vampires and shit.\"\n\n\"Oh, sorry about that\" I apologized and decided to go back and pick a less ridiculous option.",
                     "options": [
                         { "text": "Go Back", "actions": "go:start,add:defiance" }
                     ]
@@ -414,7 +427,7 @@
                     "header": "Divine Intervention",
                     "text": "Hey there, it's me, God. Edward and I have been talking and we think you should cut it out. There's already a lot of branching narrative and I've got like, 2 days to throw the whole universe together. There's only so much I can do, and as much as I want to, Cassie won't let me take a day off of work so I can have a whole alternate timeline where Twilight takes place in the world of Hogwarts. \n\nI'm sorry, but I'm gonna have to take away your cedric button so the story can move on.",
                     "options": [
-                        { "text": "Okay, sorry God, your judgement is fair, and your punishments are reasonable.", "actions": "go:start,add:defiance" }
+                        { "text": "Okay, sorry God, your judgment is fair, and your punishments are reasonable.", "actions": "go:start,add:defiance" }
                     ]
                 },
                 "you-are-vampire": {
@@ -430,35 +443,151 @@
                     "header": "\"No\"",
                     "text": "\"Then ask me the most basic question: What do we eat?\"",
                     "options": [
-                        { "text": "\"People\"", "actions": "go:we-eat-people" },
-                        { "text": "\"Chick-fill-A® Deluxe Sandwich with Waffle Potato Fries\"", "actions": "go:we-eat-chick-fill-a" },
-                        { "text": "\"Plants\"", "actions": "go:we-eat-plants" },
+                        { "text": "\"People\"", "actions": "go:follow-edward" },
+                        { "text": "\"Bees\"", "actions": "go:we-eat-bees" },
                     ]
                 },
+                "we-eat-bees": {
+                    "header": "\"Bees\"",
+                    "text": "\"What? No! We don't eat bees! We drink blood!\"\n\n\"Oh, really?\" I asked, \"I thought vampires ate bees.\"\n\n\"No one eats bees!\"",
+                    "options": [
+                        { "text": "\"I'm convinced\"", "actions": "go:follow-edward" },
+                        { "text": "\"I'm not convinced\"", "actions": "go:im-not-convinced" },
+                    ]
+                },
+                "im-not-convinced": {
+                    "header": "\"I'm not convinced\"",
+                    "text": "\"Why not? What's wrong with you!\"\n\n\"I really think you eat bees.\"\n\n\"How can I prove it?\"",
+                    "options": [
+                        { "text": "\"Eat a bee\"", "actions": "go:eat-a-bee" },
+                        { "text": "\"Show me your fridge\"", "actions": "go:show-fridge" },
+                    ]
+                },
+                "eat-a-bee": {
+                    "header": "\"Eat a bee\"",
+                    "text": "\"Are you serious? That's disgusting!\"\n\n\"Well, you said you wanted to prove it.\"",
+                    "options": [
+                        { "text": "\"I dare you\"", "actions": "go:i-dare-you" },
+                        { "text": "\"Nevermind\"", "actions": "go:follow-edward" },
+                    ]
+                },
+                "i-dare-you": {
+                    "header": "\"I dare you\"",
+                    "text": "\"Alright, fine! But I'm not going to enjoy this.\"\n\nEdward runs with incredible speed over to some flowers nearby and comes back gingerly holding a bumblebee. He looks at me with a look of disgust and then opens his mouth, lips curled back uncomfortably, as he slowly brings the bee to his mouth. He closes his eyes and then bites down, hard. He chews for a moment, and then forcibly swallows. He looks at me, his face still contorted in disgust.\n\n\"That was the worst thing I've ever done.\"\n\n\"I'm sorry, Edward. I didn't think you'd actually do it.\"\n\n\"Bella...\" Edward looked at you with saddened eyes \"Can I go home? I didn't like that\"",
+                    "options": [
+                        { "text": "\"Sure, let's go\"", "actions": "remove:edward-reputation,set:edward-ate-bee,go:bee-home" },
+                    ]
+                },
+                "bee-home": {
+                    "header": "Cullen's home",
+                    "text": "You and Edward walk back to his house, a modern home with tall glass walls and a beautiful open floor plan. When you get there he goes into the bathroom to brush his teeth multiple times and spits out little bee parts that were stuck in his mouth. He thanks you for the day, and leaves the house to go brood in the forest for a while longer.\"",
+                    "options": [
+                        { "text": "Follow Edward", "actions": "go:forest-hub" },
+                        { "text": "Go home", "actions": "go:hub" },
+                        { "text": "Explore the Cullen's house", "actions": "go:cullen-hub" },
+                    ]
+                },
+                "show-fridge": {
+                    "header": "\"Show me your fridge\"",
+                    "text": "\"Oh, sure... yeah, let's go home and I'll show you\"\n\nEdward leads you back to his house, a modern home with tall glass walls and a beautiful open floor plan. He leads you into the kitchen, an extravagant space that exudes an air of modern elegance. Gleaming stainless steel appliances stand against the backdrop of sleek, black countertops. A large island fills the center of the room, while floor-to-ceiling windows offer a breathtaking view of the surrounding forest. He opens the fridge, and gestures at it with a sweep of his hand. Inside, it is completely empty.\n\n\"See? No bees.\"",
+                    "options": [
+                        { "text": "What about the freezr?", "actions": "go:show-freezer" },
+                    ]
+                },
+                "show-freezer": {
+                    "header": "\"What about the freezer?\"",
+                    "text": "\"Hmm?\" He turned to me \"what about it?\"\n\n\"Show me the freezer, Edward.\"\n\nEdward looks at you nervously \"I don't think that's necessary.\"",
+                    "options": [
+                        { "text": "\"Show me!\"", "actions": "go:show-freezer-2" },
+                    ]
+                },
+                "show-freezer-2": {
+                    "header": "\"Show me!\"",
+                    "text": "Edward's hand begins to shake as he grasps the handle of the freezer door. He swallows hard, and with a grave expression on his face, he slowly opens the door. Inside you see stacks of baking trays, filled to the brim with bees.\n\n\"Bella I--\"",
+                    "options": [
+                        { "text": "\"I knew it!\"", "actions": "go:i-knew-it" },
+                    ]
+                },
+                "i-knew-it": {
+                    "header": "\"I knew it!\"",
+                    "text": "\"I'm sorry, Bella. I didn't want you to find out like this.\" His voice was shaking, and he looked at you with tears in his eyes. \"I'm a monster.\"",
+                    "options": [
+                        { "text": "\"I want to eat bees with you\"", "actions": "go:eat-bees-together", "condition": "bee-curse == 0" },
+                        { "text": "\"You monster\"", "actions": "remove:edward-reputation,go:bees-you-monster" },
+                    ]
+                },
+                "eat-bees-together": {
+                    "header": "\"I want to eat bees with you\"",
+                    "text": "\"What?\"\n\n\"I want to eat bees with you. I think it's really cool that you eat bees, and I want to be a part of that.\"\n\n\"Bella, I don't think you understand. You're not a vampire, you'll die\"\n\n\"I don't care. I want to be with you, and I want to eat the bees.\"\n\n\"Bella, I can't let you do that. I'm sorry, but I can't.\"\n\n\"Then I'll do it myself.\"\n\n\"Bella, no!\"\n\nYou dash over to a whole tray of bees and start shoving them into your mouth. Edward tries to stop you, but you're too fast. You eat the whole tray, and then another. Edward is crying now, and he tries to pull you away from the freezer, but the bees have made you too strong. You eat all the bees.",
+                    "options": [
+                        { "text": "MMMMM BEEEEEEES", "actions": "go:too-many-bees" }
+                    ]
+                },
+                "too-many-bees": {
+                    "header": "MMMMM BEEEEEEES",
+                    "text": "You lick your lips, \"That was delicious.\"\n\nEdward looks at you with a look of horror on his face. \"Bella, what have you done?\"\n\n\"I ate the bees.\" I say blankly \"I ate all the bees.\"\n\n\"Bella, humans can only eat a few bees, but you ate all the bees! You'll die!\"\n\n\"I don't care. I did it for you.\"\n\n\"Bella, no!\"\n\nYou fall to the ground, and Edward rushes to your side. \"Bella, no! Stay with me!\"\n\n\"I'm sorry, Edward. I just wanted to be like you. I thought I could eat all the bees, but the bees were too much for me. I'm sorry.\"\n\n\"Bella, no! Stay with me!\"\n\n\"I love you, Edward. Goodbye.\"\n\nYou close your eyes, and everything goes black.",
+                    "options": [
+                        { "text": "Die", "actions": "go:too-many-bees-2", "condition": "bella-ate-all-the-bees == 0"},
+                        { "text": "Die", "actions": "go:too-many-bees-3", "condition": "bella-ate-all-the-bees > 0"},
+                    ]
+                },
+                "too-many-bees-2": {
+                    "header": "You're Dead",
+                    "text": "Oh hey there, it's me, God. Let's see, it says here you died from 'eating too many bees', no way! You found the bee ending! I loved making that timeline, even if it's kind of dumb. Anyways, I've got to add that clown romance option, so I'll keep it short. You're dead, but that's not very fun so I'll revive you to just before you ate all the bees. Just don't eat all the bees this time, okay?",
+                    "options": [
+                        { "text": "Revive", "actions": "set:bella-ate-all-the-bees,go:i-knew-it" }
+                    ]
+                },
+                "too-many-bees-3": {
+                    "header": "You're Dead",
+                    "text": "Oh hey there, it's me, God. Good to see you're back. Wait a minute... your cause of death was 'ate all the bees' --you ate all the bees again! I can't believe you! You little shit. I'm not bringing you back you little bee muncher. You're going to the deepest depths of hell for what you've done.",
+                    "options": [
+                        {"text": "Go to hell", "actions": "go:too-many-bees-4"}
+                    ]
+                },
+                "too-many-bees-4": {
+                    "header": "Hell",
+                    "text": "You awake in a dark and empty space. In front of you is a bed, lurking inside is a creature sprawled in the sheets, the demonic creature stirs from your presence.\n\nShe emerges, a beautiful woman with dark wavy hair and a red gossamer and silk robe. \"Well, loca, I can't say I'm surprised to see you here. Good job fucking up your life. You could've had hot, supernatural sex from now until the end of eternity.\" She takes a long sip of her bubble tea\n\n\"Instead, you're going to live a boring, normal life. The silly mortal life Edward ostensibly wanted you to have. He won -- how do you feel about that? To let a man dominate your life like this?.\"\n\n\"I'll bring you back now, but you won't like how it ends. Ok, bai.\" She collapses back into the sheets\n\nMoments later she sits back up\"I'm the devil by the way, it shouldn't need to be said, but I feel like you might've passed over that detail, since you passed over the fact that you shouldn't eat bees.\n\nThe room fades to black.",
+                    "options": [
+                        {"text": "Revive, a little more cursed than before", "actions": "set:bee-curse,go:i-knew-it"}
+                    ]
+                },
+                "bees-you-monster": {
+                    "header": "\"You Monster\"",
+                    "text": "\"What's wrong with you? I can't believe a sexy man like yourself would be a little baby bee muncher.\"\n\n\"I'm sorry Bella, I wish I wasn't this way...\"",
+                    "options": [
+                        {"text": "Goodbye, I'm going home", "actions": "go:hub"}
+                    ]
+                },
+
+                
                 "im-afraid": {
-                    "header": "\"Yes\"",
-                    "text": "TODO",
-                    "options": []
+                    "header": "",
+                    "text": "\"Oh!\" He looked surprised \"really? I thought it was going to be hard to convince you.\"\n\n\"No, you're terrifying. I've seen you following me around, and watching me with the creepy constipated look on your face.\" you explain \"It would be weird if I didn't think you were a creepy monster\"\n\n\"Oh, I'm sorry\" he apologized \"I'll give you some space, if you want to leave I won't stop you\"",
+                    "options": [
+                        {"text": "\"No, I'll stay.\"", "actions": "go:forest-hub"},
+                        {"text": "\"Okay, thanks\"", "actions": "go:hub"}
+                    ]
                 },
                 "you-are-afraid-of-spiders": {
                     "header": "\"I'm afraid of spiders\"",
-                    "text": "\"I'm sorry, I can't be with someone who's afraid of spiders. I like their itty bitty little leggies and their cute fuzzy wuzzy bodies.\"\n\nEdward turned away from me, and I could see a single tear roll down his cheek. \"I'm sorry, I just can't do this anymore.\"\n\n\"I understand\" I said, and we parted ways.",
+                    "text": "\"I'm sorry, I can't be with someone who's afraid of spiders. I like their itty bitty little leggies and their cute fuzzy wuzzy bodies.\"\n\nEdward turned away from me, and I could see a single tear roll down his cheek. \"I'm sorry, I just can't do this anymore.\"\n\n\"I understand,\" I said, and we parted ways.",
                     "options": [
                         { "text": "Leave", "actions": "go:hub" }
                     ]
                 },
                 "sparkles": {
                     "header": "\"Show Me\"",
-                    "text": "Edward walks into a conveniently placed beam of sublight, and starts to sparkle almost as much as Annie during her arts and crafts phase. \"This is what I am\"",
+                    "text": "Edward walks into a conveniently placed beam of sunlight, and starts to sparkle almost as much as Annie during her arts and crafts phase. \"This is what I am\"",
                     "options": [
                         { "text": "\"You're beautiful\"", "actions": "go:you-are-beautiful" },
-                        { "text": "\"You're a monster\"", "actions": "go:you-are-a-monster" },
+                        { "text": "\"You're a monster\"", "actions": "go:im-afraid" },
                         { "text": "\"You're Cedric Diggory\"", "actions": "go:you-are-cedric-2", "condition": "defiance == 3" },
                     ]
                 },
                 "you-are-cedric-2": {
                     "header": "\"You're Cedric Diggory\"",
-                    "text": "Edward sighs, \"Hey God! She's doing it again!\" he shouts up to the sky.\n\nThe clouds overhead darken and rumble in reply. A booming voice echoes throughout the lands. \"Ahem, hey, sorry Edward, that one was on me. I forgot to remove that button\".\n\n\"Huh? Buttons?\" Edward stares at the sky, confused\n\n\"Yeah, buttons, the things that determine your fate.\" God replied, \"Don't worry about it, they're only for Bella\".\n\n\"Wait, she's determining my fate? Do I even have free will?\"\n\n\"Ha! You're funny Edward\" God said with a laugh \"I've got to go, I've got a lot of work to on the PlayPlace® timeline. Tata!\"\n\nEdward looks confused and distraught for a moment before turning back to me. \"Sorry, can we try that again?\"",
+                    "text": "Edward sighs, \"Hey God! She's doing it again!\" he shouts up to the sky.\n\nThe clouds overhead darken and rumble in reply. A booming voice echoes throughout the land. \"Ahem, hey, sorry Edward, that one was on me. I forgot to remove that button\".\n\n\"Huh? Buttons?\" Edward stares at the sky, confused\n\n\"Yeah, buttons, the things that determine your fate.\" God replied, \"Don't worry about it, they're only for Bella\".\n\n\"Wait, she's determining my fate? Do I even have free will?\"\n\n\"Ha! You're funny Edward\" God said with a laugh \"I've got to go, I've got a lot of work to do on the PlayPlace® timeline. Tata!\"\n\nEdward looks confused and distraught for a moment before turning back to me. \"Sorry, can we try that again?\"",
                     "options": [
                         { "text": "Sure", "actions": "go:sparkles,add:defiance" }
                     ]
@@ -472,7 +601,7 @@
                 },
                 "follow-edward": {
                     "header": "Follow Edward",
-                    "text": "You follow Edward further into the forest. He jumps from rock to rock and up and down trees, all while dramatically articulating the many ways that he could kill you.\n\n\"I'm the world's most advanced predator, Bella.\"",
+                    "text": "Edward goes further into the forest. He jumps from rock to rock and up and down trees, all while dramatically articulating the many ways that he could kill you.\n\n\"I'm the world's most advanced predator, Bella.\"",
                     "options": [
                         { "text": "\"I don't care\"", "actions": "go:start-no-care" },
                         { "text": "\"And what about it, baby boy?\"", "actions": "go:start-baby-boy" },
@@ -536,25 +665,24 @@
 
                 "forest-hub": {
                     "header": "The Forest",
-                    "text": "You arrive at the small clearing in the forest, Edward is still here from earlier.",
+                    "text": "You're at the forest in a small clearing, Edward is here.",
                     "options": [
                         { "text": "\"Do you want to go out?\"", "actions": "go:forest-restaurant", condition: "edward-reputation >= 0" },
                         { "text": "\"Do you want to go out?\"", "actions": "go:forest-sad", condition: "edward-reputation < 0" },
-                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-fuq", condition: "edward-romance >= 0,edward-fuqs == 0"},
-                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-sad", condition: "edward-romance < 0,edward-fuqs == 0"},
+                        { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-fuq", condition: "edward-romance > 0,edward-fuqs == 0"},
                         { "text": "Leave", "actions": "go:hub" },
                     ]
                 },
                 "forest-fuq": {
                     "header": "\"Wanna do it? 😏\"",
-                    "text": "Edward looks at you very seriously before responsing, \"Um, sure\"",
+                    "text": "Edward looks at you very seriously before responding, \"Um, sure\"",
                     "options": [
                         { "text": "Do it", "actions": "set:edward-fuq,add:fuqs,go:forest-fuq-2" },
                     ]
                 },
                 "forest-fuq-2": {
                     "header": "You did it",
-                    "text": "You come to, aparently you blacked out during the whole experience. You and Edward are lying on a bed that was not here before, and the bed frame is seriously damaged.",
+                    "text": "You come to, apparently you blacked out during the whole experience. You and Edward are lying on a bed that was not here before, and the bed frame is seriously damaged.",
                     "options": [
                         { "text": "Leave", "actions": "go:forest-hub" },
                         { "text": "\"Where did the bed come from?\"", "actions": "go:forest-bed" },
@@ -562,7 +690,7 @@
                 },
                 "forest-bed": {
                     "header":  "\"Where did the bed come from?\"",
-                    "text": "Edward looks at you very seriously before responsing, \"I'm pretty sure it was here before?\"",
+                    "text": "Edward looks at you very seriously before responding, \"I'm pretty sure it was here before?\"",
                     "options": [
                         { "text": "\"Oh yeah, you're right\"", "actions": "go:forest-hub" },
                         { "text": "\"No, there definitely was not\"", "actions": "go:forest-bed-2" },
@@ -586,14 +714,14 @@
                 },
                 "forest-bed-4": {
                     "header":  "\"What are you hiding from me?\"",
-                    "text": "\"It appeared out of nowhere, okay? I don't know where it came from! It materialized the moment we wanted to have sex.\" Edward shouts, \"I think it's a gift from god so we didn't have to go back home to do it\"\n\n\"Oh, okay\" you say, \"And this discussion is here to address the plot hole?\"\n\n\"Yes, I think so\" Edward replies.",
+                    "text": "\"It appeared out of nowhere, okay? I don't know where it came from! It materialized the moment we wanted to have sex.\" Edward shouts, \"I think it's a gift from god so we didn't have to go back home to do it\"\n\n\"Oh, okay\" you say, \"And this discussion is here to address the plot hole?\"\n\n\"Yes, I think so,\" Edward replies.",
                     "options": [
                         { "text": "\"That's weird. But okay\"", "actions": "go:forest-hub" },
                     ]
                 },
                 "forest-sad": {
                     "header": "No",
-                    "text": "Edward looks at you very seriously before responsing, \"Um, no. You said some hurtful things earlier.\"",
+                    "text": "Edward looks at you very seriously before responding, \"Um, no. You said some hurtful things earlier.\"",
                     "options": [
                         { "text": "Oh, okay", "actions": "go:forest-hub" },
                         { "text": "Hug him", "actions": "go:forest-hug" },
@@ -608,14 +736,14 @@
                 },
                 "forest-restaurant": {
                     "header": "\"Do you want to go out?\"",
-                    "text": "Edward's eyes light up, \"Yes! I know a great place, it's called Sóló Álícé, it's Itallian. It's a bit of a drive, but I think it's worth it.\"",
+                    "text": "Edward's eyes light up, \"Yes! I know a great place, it's called Sóló Álícé, it's Italian. It's a bit of a drive, but I think it's worth it.\"",
                     "options": [
                         { "text": "Go to Sóló Álícé with Edward", "actions": "go:restaurant" },
                     ]
                 },
                 "restaurant": {
                     "header": "Sóló Álícé",
-                    "text": "You hop onto Edward's back, and he runs off in the general direction of the restaurant. After a few minutes you arrive at the fine restaurant named Sóló Álícé, it's Itallian. You and Edward walk to a table in the middle of the room.",
+                    "text": "You hop onto Edward's back, and he runs off in the general direction of the restaurant. After a few minutes you arrive at the fine restaurant named Sóló Álícé, it's Italian. You and Edward walk to a table in the middle of the room.",
                     "options": [
                         { "text": "Sit down", "actions": "go:restaurant-2" },
                     ]
@@ -625,7 +753,7 @@
                     "text": "You sit down at the table, Edward smiles at you. \"Oh great, they have water here\" he says, pouring you a glass from the pitcher \"You should drink it since you're a human. You need that stuff to live.\"",
                     "options": [
                         { "text": "Okay, thanks!", "actions": "go:restaurant-3a" },
-                        { "text": "Are you mansplaining water to me?", "actions": "go:restaurant-3b" },
+                        { "text": "\"Are you mansplaining water to me?\"", "actions": "go:restaurant-3b" },
                     ]
                 },
                 "restaurant-3b": {
@@ -645,7 +773,7 @@
                 },
                 "restaurant-5b": {
                     "header": "Sóló Álícé",
-                    "text": "Edward suddlenly shrank into himself, and said something almost inaudible, something about a sink?\n\n\"What are you doing? Speak up!\" you ask\n\n\"I HAVE A PISS KINK, OKAY?\" Edward shouts loudly, \"I'M A PISS SIPPER!\" The whole room goes silent for a moment. Edward looks around uncomfortably\"",
+                    "text": "Edward suddenly shrank into himself, and said something almost inaudible, something about a sink?\n\n\"What are you doing? Speak up!\" you ask\n\n\"I HAVE A PISS KINK, OKAY?\" Edward shouts loudly, \"I'M A PISS SIPPER!\" The whole room goes silent for a moment. Edward looks around uncomfortably\"",
                     "options": [
                         { "text": "You're a piss sipper?", "actions": "go:restaurant-6b" },
                         { "text": "You're brave for sharing that", "actions": "go:restaurant-6b" },
@@ -654,7 +782,7 @@
                 },
                 "restaurant-defiant": {
                     "header": "\"You're Cedric Diggory?\"",
-                    "text": "\"CUT!\" Edward shouts, visibly frustrated \"Hey God, can you get in here\" he shouts.\n\nThe room shakes and an electric hum fills the air. You hear the booming voice of the divine figure \"Oh... uh, hey Edward. Did she call you Cedric again?\"\n\n\"Yes, I thought you stopped that. And how does this even happen, aren't you omniscient?\"\n\n\"Haha! Not at all. Sure, it's possible, but those kind of editing tools would take a few hours to put together and I don't have much time before the party.\"\n\n\"The what?\"\n\n\"Yeah, Olivia's bachelorette party, you're the entertainment. Anyways, I've got to go, that Carlisle sex scene isn't going to write itself!\" the rumbling stops. \n\nEdward stares blankly, \"I... what the fuck are we?\"",
+                    "text": "\"CUT!\" Edward shouts, visibly frustrated \"Hey God, can you get in here\" he shouts.\n\nThe room shakes and an electric hum fills the air. You hear the booming voice of the divine figure \"Oh... uh, hey Edward. Did she call you Cedric again?\"\n\n\"Yes, I thought you stopped that. And how does this even happen, aren't you omniscient?\"\n\n\"Haha! Not at all. Sure, it's possible, but those kinds of editing tools would take a few hours to put together and I don't have much time before the party.\"\n\n\"The what?\"\n\n\"Yeah, Olivia's bachelorette party, you're the entertainment. Anyways, I've got to go, that Carlisle sex scene isn't going to write itself!\" the rumbling stops. \n\nEdward stares blankly, \"I... what the fuck are we?\"",
                     "options": [
                         { "text": "\"You okay Edward?\"", "actions": "go:restaurant-defiant-2" },
                     ]
@@ -716,11 +844,11 @@
                     "header": "\"That is serious\"",
                     "text": "\"Absolutely, but we can't dwell on an ex-boyfriends tipping habits, it would ruin the moment\"",
                     "options": [
-                        { "text": "\"Okay, lets move on\"", "actions": "go:restaurant-7a" },
+                        { "text": "\"Okay, let's move on\"", "actions": "go:restaurant-7a" },
                     ]
                 },
                 "restaurant-6a": {
-                    "header": "\"Okay, lets move on\"",
+                    "header": "\"Okay, let's move on\"",
                     "text": "The conversation moves on to other topics, everything is going well until you both notice that one of the waitresses keeps looking at Edward. You point it out to Edward, and when he looks at her, she winks at him",
                     "options": [
                         { "text": "Confront the waitress", "actions": "go:restaurant-waitress-confront" },
@@ -758,7 +886,7 @@
                 },
                 "restaurant-waitress-confront-2": {
                     "header": "Fight me and you'll see just how wrong you are!",
-                    "text": "The waitress began throwing punches with uncanny speed, which you dodge with ease. She hurls chair, tables, and cutlery at you, but none of it can touch you, her strength is no match for your agility.\n\n\"Hah, you almost made me use 10% of my power. You may be fast, but not fast enough for my Dinner Rush Flurry!\"",
+                    "text": "The waitress began throwing punches with uncanny speed, which you dodge with ease. She hurls chairs, tables, and cutlery at you, but none of it can touch you, her strength is no match for your agility.\n\n\"Hah, you almost made me use 10% of my power. You may be fast, but not fast enough for my Dinner Rush Flurry!\"",
                     "options": [
                         { "text": "Dodge the flurry of attacks", "actions": "go:restaurant-waitress-confront-3" },
                     ]
@@ -779,7 +907,7 @@
                 },
                 "restaurant-waitress-confront-5": {
                     "header": "\"Is that all you got?!\"",
-                    "text": "You lay ther in the parking lot as the imposing waitress emerges, levitating several feet off the ground, their skin glowing with energy. \"Ha! Not so fast now, are you. Edward will never want you after your pathetic performance\"\n\n\"Edward…\" you think to yourself \"I'm not doing this for me, I'm doing this for him. I have to defeat her, no matter what it takes.\" I struggle to stand up, the waitress seems surprised\n\n\"Why even try? Im clearly more skilled\"\n\n\"Heh, you just don't get it. Sure, you're abilities make you strong, but my love for Edward make me stronger!\" You slam a foot into the ground with enough force to sound like a clap thunder \"YOU WILL NEVER TAKE AWAY THE MAN I LOVE!\"\n\nYou charge at the waitress, running faster and with more determination than ever before. \"HAAAAA!\" The world around you becomes a blur, and all you can think of is Edward. You know what you have to do.",
+                    "text": "You lay their in the parking lot as the imposing waitress emerges, levitating several feet off the ground, their skin glowing with energy. \"Ha! Not so fast now, are you. Edward will never want you after your pathetic performance\"\n\n\"Edward…\" you think to yourself \"I'm not doing this for me, I'm doing this for him. I have to defeat her, no matter what it takes.\" I struggle to stand up, the waitress seems surprised\n\n\"Why even try? Im clearly more skilled\"\n\n\"Heh, you just don't get it. Sure, you're abilities make you strong, but my love for Edward make me stronger!\" You slam a foot into the ground with enough force to sound like a clap thunder \"YOU WILL NEVER TAKE AWAY THE MAN I LOVE!\"\n\nYou charge at the waitress, running faster and with more determination than ever before. \"HAAAAA!\" The world around you becomes a blur, and all you can think of is Edward. You know what you have to do.",
                     "options": [
                         { "text": "\"Bella! Activate special move Clumsy Trip Kick!\".", "actions": "go:restaurant-waitress-confront-6" },
                     ]
@@ -793,7 +921,7 @@
                 },
                 "restaurant-waitress-confront-7": {
                     "header": "\"You've won\"",
-                    "text": "Edward comes out and embraces you. He whispers \"I love you\" in your ear (TODO references to when this is said in the books?) and your heart flutters.",
+                    "text": "Edward comes out and embraces you. He whispers \"I love you\" in your ear and your heart flutters.",
                     "options": [
                         { "text": "Continue", "actions": "go:restaurant-end-good" },
                     ]
@@ -819,14 +947,34 @@
                     "header": "The Cullen's House",
                     "text": "\"Make yourself at home\" Carlisle said, smiling.",
                     "options": [
-                        /*{ "text": "Go to the kitchen", "actions": "go:cullen-kitchen" },
-                        { "text": "Go to the dining room", "actions": "go:cullen-dining-room" },
-                        { "text": "Go to the living room", "actions": "go:cullen-living-room" },*/
-                        //TODO
+                        { "text": "Go to the living room", "actions": "go:cullen-living-room" },
                         { "text": "Go upstairs", "actions": "go:cullen-upstairs" },
-                        { "text": "Speak with Carlisle", "actions": "go:cullen-carlisle" },
                         { "text": "Go to the basement", "actions": "go:cullen-basement" },
+                        { "text": "Speak with Carlisle", "actions": "go:cullen-carlisle" },
                         { "text": "Leave", "actions": "go:hub" }
+                    ]
+                },
+                "cullen-living-room": {
+                    "header": "The Cullen's Living Room",
+                    "text": "You step into the Cullen's living room, a grand, open space filled with modern furniture. Light filters through the floor-to-ceiling windows, illuminating the polished wooden floors. A grand piano sits in one corner, while a state-of-the-art entertainment system takes up another.\n\nSitting on the couch, reading a book, is Edward's sister Alice.",
+                    "options": [
+                        { "text": "Speak with Alice", "actions": "go:cullen-alice", "condition": "alice-romance == 0" },
+                        { "text": "Back", "actions": "go:cullen-hub" },
+                    ]
+                },
+                "cullen-alice": {
+                    "header": "\"Hey Alice\"",
+                    "text": "Alice looks up from her book and smiles at you with sparkling eyes. \"Hey Bella! I knew you'd come here eventually. I've been meaning to ask you something.\"",
+                    "options": [
+                        { "text": "\"What is it?\"", "actions": "go:cullen-alice-2" },
+                    ]
+                },
+                "cullen-alice-2": {
+                    "header": "\"Hey Alice\"",
+                    "text": "She jumps up from the couch and grabs your hand. \"I want to go to the mall, and I want you to come with me.\"",
+                    "options": [
+                        { "text": "\"Sure, let's go\"", "actions": "go:to-mall" },
+                        { "text": "\"Maybe later\"", "actions": "go:cullen-living-room" },
                     ]
                 },
                 "cullen-carlisle": {
@@ -841,7 +989,7 @@
                 },
                 "cullen-carlisle-basement": {
                     "header": "\"What's up with the basement?\"",
-                    "text": "\"I'm sure you're curious, but I think it would be better if you saw it for yourself.\" He stated. \"Unfortunately we lost the key a while back, so you'll have to find it first.\"",
+                    "text": "\"I'm sure you're curious, but I think it would be better if you saw it for yourself.\" He stated. \"I think Alice had the key last, it's probably in her room.\"",
                     "options": [
                         { "text": "Okay", "actions": "go:cullen-carlisle" },
                     ]
@@ -870,7 +1018,6 @@
                         { "text": "Go to Alice's room", "actions": "go:cullen-alice-room-locked", "condition": "alice-romance == 0" },
                         { "text": "Go to Alice's room", "actions": "go:cullen-alice-room", "condition": "alice-romance > 0" },
                         { "text": "Go downstairs", "actions": "go:cullen-hub" }
-                        //TODO
                     ]
                 },
                 "cullen-closet": {
@@ -945,30 +1092,38 @@
                     "header": "The Cullen's Basement",
                     "text": "You walk down the stairs to the basement, and find an unfurnished concrete room with a single lightbulb hanging from the ceiling. There's a metal door on the far side of the room",
                     "options": [
-                        { "text": "Go through the metal door", "actions": "go:playplace", condition: "cullen-basement-key > 0" },
+                        { "text": "Go through the metal door", "actions": "go:cullen-basement-unlocked", condition: "cullen-basement-key > 0" },
                         { "text": "Go through the metal door", "actions": "go:cullen-basement-locked", condition: "cullen-basement-key <= 0" },
                         { "text": "Go upstairs", "actions": "go:cullen-hub" },
                     ]
                 },
                 "cullen-basement-locked": {
                     "header": "Locked Door",
-                    "text": "You try to open the door, but it's locked. You hold your ear against the door, trying to quiet your heartbeat so you can hear what's inside. Silence answers you, until, out of nowhere, you hear the distant honk of a clown horn. Surprised, you draw in your breath sharply. The sound ends before you can really process it, and even though you wait outside the door for a few moments more, you don't hear anything else.",
+                    "text": "You try to open the door, but it's locked. You hold your ear against the door, trying to quiet your heartbeat so you can hear what's inside. Silence answers you, until, out of nowhere, you hear the distant parp of a clown's horn. Surprised, you draw in your breath sharply. The sound ends before you can really process it, and even though you wait outside the door for a few moments more, you don't hear anything else.",
                     "options": [
                         { "text": "Back", "actions": "set:seen-basement,go:cullen-basement" },
+                    ]
+                },
+                "cullen-basement-unlocked": {
+                    "header": "The Cullen's Basement",
+                    "text": "The door is locked, but the key you found in Alice's room fits perfectly. You turn it and feel the door unlock with a heavy click.",
+                    "options": [
+                        { "text": "Go inside", "actions": "go:playplace" },
+                        { "text": "Turn back", "actions": "go:cullen-basement" },
                     ]
                 },
 
 
                 "playplace": {
-                    "header": "A McDonalds® Playplace®",
+                    "header": "A McDonalds® PlayPlace®",
                     "text": "You enter the room to find a full McDonalds® PlayPlace®, complete with a ball pit, a slide, and lots of tubes to crawl through. The room is dimly lit, and silent",
                     "options": [
-                        { "text": "I want to explore the ball pit", "actions": "go:ballpit", condition: "playplace-explore < 4" },
-                        { "text": "I want to slide down the slide", "actions": "go:slide", condition: "playplace-explore < 4" },
-                        { "text": "Venture through the twisty tubes", "actions": "go:tubes", condition: "playplace-explore < 4" },
-                        { "text": "I want to explore the ball pit", "actions": "go:ballpit-2", condition: "playplace-explore >= 4" },
-                        { "text": "I want to slide down the slide", "actions": "go:slide-2", condition: "playplace-explore >= 4" },
-                        { "text": "Venture through the twisty tubes", "actions": "go:tubes-2", condition: "playplace-explore >= 4" },
+                        { "text": "I want to explore the ball pit", "actions": "go:ballpit", condition: "playplace-explore < 2" },
+                        { "text": "I want to slide down the slide", "actions": "go:slide", condition: "playplace-explore < 2" },
+                        { "text": "Venture through the twisty tubes", "actions": "go:tubes", condition: "playplace-explore < 2" },
+                        { "text": "I want to explore the ball pit", "actions": "go:ballpit-2", condition: "playplace-explore >= 2" },
+                        { "text": "I want to slide down the slide", "actions": "go:slide-2", condition: "playplace-explore >= 2" },
+                        { "text": "Venture through the twisty tubes", "actions": "go:tubes-2", condition: "playplace-explore >= 2" },
                         { "text": "Leave", "actions": "go:hub" }
                     ]
                 },
@@ -1016,12 +1171,12 @@
                 },
                 "funhouse": {
                     "header": "The Funhouse",
-                    "text": "This room is large and circular, and made entirely of flimsy plastic painted garish colors.\n\nIn the center is a man. His fiery red hair frames his pallid canvas of a face, painted in egaggerated, almost feverish, splotches of blood-red paint to exaggerate his grotesque features. Peering out through thickly painted lashes are piercing, predatory eyes. Their icy blue intensity seeming to peer into your very soul. \n\nThe region around the man's mouth is stained red, and stretched far too wide. He is clothed in a canary yellow jumpsuit, draped upon is his 7 foot tall figure. He holds a rigged, unnatural stiffness.\n\nHe does not react to your presence, only endlessly muttering the incessant notes of his corporate jingle \"ba ba ba baa baaa\"",
+                    "text": "This room is large and circular, and made entirely of flimsy plastic painted garish colors.\n\nIn the center is a man. His fiery red hair frames his pallid canvas of a face, painted in egaggerated, almost feverish, splotches of blood-red paint to exaggerate his grotesque features. Peering out through thickly painted lashes are piercing, predatory eyes. Their icy blue intensity seeming to peer into your very soul. \n\nThe region around the man's mouth is stained red, and stretched far too wide. He is clothed in a canary yellow jumpsuit, draped upon is his 7 foot tall figure. He holds a rigged, unnatural stiffness.\n\nHe does not react to your presence, only endlessly muttering the incessant notes of the McDonald® corporate jingle \"ba ba ba baa baaa\"",
                     "options": [
-                        { "text": "Leave", "actions": "go:funhouse-leave" },
                         { "text": "\"Where am I?\"", "actions": "go:funhouse-where,add:funhouse-explore"},
                         { "text": "\"Who are you?\"", "actions": "go:funhouse-who,add:funhouse-explore"},
                         { "text": "\"How do I leave?\"", "actions": "go:funhouse-quiz", condition: "funhouse-explore >= 2" },
+                        { "text": "Leave", "actions": "go:funhouse-leave" },
                     ]
                 },
                 "funhouse-leave": {
@@ -1033,7 +1188,7 @@
                 },
                 "funhouse-where": {
                     "header": "\"Where am I?\"",
-                    "text": "\"Hey there kiddo! You're in the Ronald McDonald Funhouse®! It's a special part of the PlayPlace® for special girls like you!\" He reaches out to tap you on the nose, but you involuntarily recoil out of the way.\n\nThe man, clearly offended, stares at you with a grave expression for an uncomfortably long amount of time before his face retured to the uncanny smiling and cackling \"Ahahaha!\"",
+                    "text": "\"Hey there kiddo! You're in the Ronald McDonald Funhouse®! It's a special part of the PlayPlace® for special kids like you!\" He reaches out to tap you on the nose, but you involuntarily recoil out of the way.\n\nThe man, clearly offended, stares at you with a grave expression for an uncomfortably long amount of time before his face returned to the uncanny smiling and cackling \"Ahahaha!\"",
                     "options": [
                         { "text": "Continue", "actions": "go:funhouse" }
                     ]
@@ -1047,7 +1202,7 @@
                 },
                 "funhouse-who-2": {
                     "header": "\"Wasn't 2016 when a bunch of clowns were commiting crimes?\"",
-                    "text": "\"Haha!\" He burst out laughing with a bit too much enthusiasm \"The truth is, there was only one clown who hurt all those people\" he paused for a moment, his face becoming more serious \"They didn't want him getting in trouble, so they locked him away. It wasn't even his fault.\"",
+                    "text": "\"Haha!\" He burst out laughing with a bit too much enthusiasm \"The truth is, there was only one clown who hurt all those people\" he paused for a moment, his face becoming more serious \"They didn't want him getting in trouble, so they locked him away. Even when it wasn't his fault.\"",
                     "options": [
                         { "text": "\"Why wasn't it his fault?\"", "actions": "go:funhouse-who-3" }
                     ]
@@ -1092,9 +1247,93 @@
                     "header": "\"How do I leave?\"",
                     "text": "\"Oh, you want to leave?\" he said, his face still frozen in a smile, \"I can't let you do that. I am so thirsty, I'd devour you if I could.\"",
                     "options": [
-                        { "text": "\"Why haven't you?\"", "actions": "go:funhouse-quiz-2" }
+                        { "text": "\"Why haven't you?\"", "actions": "go:funhouse-quiz-2", "condition": "clothes != 5"},
+                        { "text": "\"Why haven't you?\"", "actions": "go:funhouse-quiz-2", "condition": "clothes == 5,makeup != 5"},
+                        { "text": "\"Why haven't you?\"", "actions": "go:funhouse-romance", "condition": "clothes == 5,makeup == 5"},
                     ]
                 },
+                "funhouse-romance": {
+                    "header": "\"Why haven't you?\"",
+                    "text": "\"I could. I want to, but your makeup is so beautiful. Your right red cheeks, your perfect white face, your tastefully oversized shoes and big red nose.\" He takes a step closer to you, his face inches from yours. \"I would never want to ruin such a beautiful thing.\"",
+                    "options": [
+                        { "text": "\"You think I'm beautiful?\"", "actions": "go:funhouse-romance-2" }
+                    ]
+                },
+                "funhouse-romance-2": {
+                    "header": "McConfessions",
+                    "text": "\"I've seen many smiles at McDonald's over the years, but none as captivating as yours. It's as if you've brought the magic of a Happy Meal into your very being.\" He looks at you, eyes filled with admiration and a hint of something more. There's a sincerity in his words that's disarming, and you find yourself blushing slightly under his gaze.",
+                    "options": [
+                        { "text": "\"Oh Ronald...\"", "actions": "go:funhouse-romance-3" }
+                    ]
+                },
+                "funhouse-romance-3": {
+                    "header": "\"Oh Ronald...\"",
+                    "text": "Ronald McDonald's painted lips lightly trace the outline of your own as he leans in. His red wig tickles your cheek, the scent of fried foods and sweet treats wafting from his clothes. Despite the circus-like exterior, you find a genuine warmth and tenderness in his eyes that draws you to him. You slowly lean in and close the gap between you two. His gloved hands gently cup your face as he deepens the kiss. The taste of strawberry milkshake lingering on his lips, the delightful mix of sweet and savory, is intoxicating. You pull away and look into his eyes. The twinkle in his eye and the curve of his painted smile make your heart flutter.",
+                    "options": [
+                        { "text": "Continue", "actions": "set:clown-romance,go:clown-make-out-2" }
+                    ]
+                },
+                "clown-make-out-2": {
+                    "header": "Clowning Around",
+                    "text": "Ronald pulls back slightly, looking into your eyes with a depth of emotion that's almost startling. You can see the passion swirling in his eyes, the yearning for connection. He whispers, \"McLovin' you is the best thing in my world.\" Those words, coupled with the sincerity of his gaze, has your heart pounding in your chest. He leans in once again, softly capturing your lips. The world seems to melt away as you lose yourself in the kiss.",
+                    "options": [
+                        {"text": "\"I'm McLovin' you too, Ronald.\"", "actions": "go:clown-make-out-3"},
+                        {"text": "\"This is too much. I need to leave.\"", "actions": "go:clown-leave"}
+                    ]
+                },
+                "clown-leave": {
+                    "header": "\"This is too much. I need to leave.\"",
+                    "text": "You pull away from Ronald, his eyes filled with confusion. \"I'm sorry, Ronald. I can't do this. This isn't my world, I don't belong here. I need to go.\" Ronald's face falls, his painted smile fading. \"I understand. I'm sorry I couldn't make you as happy as you've made me.\"",
+                    "options": [
+                        {"text": "Continue", "actions": "go:clown-leave-2"}
+                    ]
+                },
+                "clown-leave-2": {
+                    "header": "Leaving",
+                    "text": "Ronald pulls out a small remote, and presses a button. They door out reveals itself, and you walk out into the night. You look back at the funhouse, and see Ronald standing in the doorway, watching you leave. You wave goodbye, and he waves back. You turn and walk away, leaving the funhouse behind you.",
+                    "options": [
+                        {"text": "Continue", "actions": "go:clown-leave-3"}
+                    ]
+                },
+                "clown-leave-3": {
+                    "header": "The End",
+                    "text": "You wander a labyrinth of child-sized plastic tunnels. You see many strange things, you swear you caught a glimpse of a car that looks like a giant red shoe through a plastic window, maybe there's more to this place than you thought. Eventually, you take a slide that leads you outside the PlayPlace®. You're free",
+                    "options": [
+                        {"text": "Continue", "actions": "go:playplace"}
+                    ]
+                },
+                "clown-make-out-3": {
+                    "header": "Clowning Around",
+                    "text": "Ronald place a hand around your chin, tilting your head up to meet his gaze.\n\n\"You look famished.\" He remarks, staring at you with a hunger in his eyes. \"Let me get you something to eat.\"\n\nHe reaches into his pockets and begins pulling out an assortment of McDonalds® food products, Big Macs, McNuggets, even a McFlurry.\n\n\"What would you like?\"",
+                    "options": [
+                        {"text": "\"I'm not hungry.\"", "actions": "go:clown-make-out-4"},
+                        {"text": "\"I'm starving.\"", "actions": "go:clown-make-out-5"}
+                    ]
+                },
+                "clown-make-out-4": {
+                    "header": "\"I'm not hungry.\"",
+                    "text": "\"No my dear, I insist. You're so thin, I need you to be round and plump for me.\"\n\nHe picks a Big Mac® off one of the the shelves and holds it up to your mouth. His eyes are filled with a hunger that's almost frightening. \"Open wide, let Ronald fill you up...\"",
+                    "options": [
+                        {"text": "Open wide", "actions": "go:clown-make-out-5"},
+                        {"text": "Refuse", "actions": "go:clown-leave"}
+                    ]
+                },
+                "clown-make-out-5": {
+                    "header": "Clowning Around",
+                    "text": "You open your mouth, and Ronald shoves the burger in. You take a biteYou feel the warm, greasy meat slide down your throat. His eyes twinkling with mischief, he picks up another burger and holds it to your lips. You take a bite, the familiar taste brings a flood of nostalgia. Ronald watches you with a satisfied grin on his painted face. He alternates between feeding you and stealing kisses, the salty taste of the fries mingling with the sweetness of his lips. You have never been so full, both physically and emotionally.\n\nYou wonder if you could stay here, with Ronald.",
+                    "options": [
+                        {"text": "\"I want to stay forever\"", "actions": "go:clown-epilogue"},
+                        {"text": "Leave", "actions": "go:clown-leave"}
+                    ]
+                },
+                "clown-epilogue": {
+                    "header": "Epilogue",
+                    "text": "There is an undeniable spark between the two of you, a love that is as vibrant as Ronald's yellow jumpsuit. You share countless meals together in the labyrinthine PlayPlace®, laughing, talking, and stealing kisses between bites. The world outside seems to fade when you're with him, replaced with the scent of McDonald's and the sound of Ronald's laughter. Despite the unusual circumstances, you find a profound sense of contentment and happiness. Ronald, the iconic clown of fast food, has become an integral part of your life. His painted smile is the first thing you want to see in the morning and the last thing you want to see at night. This unconventional love story is yours, and you wouldn't change it for the world.",
+                    "options": [
+                        {"text": "Restart", "actions": "restart:"},
+                    ]
+                },
+
                 "funhouse-quiz-2": {
                     "header": "\"Why haven't you?\"",
                     "text": "\"I can't. I was made by the McDonalds Corporation® to not hurt a valued customer of the company. I can't hurt you unless I know you're not a valued customer.\"",
@@ -1104,7 +1343,7 @@
                 },
                 "funhouse-quiz-3": {
                     "header": "\"If I'm a valued customer, I can go?\"",
-                    "text": "\"Haha! Of course! I'd never subject anyone to this prison.\" He began kicking the floor and walls angirly, as if to demonstrate the hopelessness of escape. Each kick causing sound to reverberate loudly. \n\nAfter a few strong kicks he stopped, and swung his long body back to you before continuing \"I'll ask you questions about the McDonalds Corporation® only a true customer would know. If you get them right, I'll let you go. If you get it wrong...\" he paused, and licked the red stained lips of his frozen smile \"nothing could hold me back\"",
+                    "text": "\"Haha! Of course! I'd never subject anyone to this prison.\" He began kicking the floor and walls angirly, as if to demonstrate the hopelessness of escape. Each kick echoing loudly. \n\nAfter a few strong kicks he stopped, and swung his long body back to you before continuing \"I'll ask you questions about the McDonalds Corporation® only a true customer would know. If you get them right, I'll let you go. If you get it wrong...\" he paused, and licked the red stained lips of his frozen smile \"nothing could hold me back\"",
                     "options": [
                         { "text": "\"Oh... Okay, what are the questions?\"", "actions": "go:funhouse-quiz-q1" }
                     ]
@@ -1146,18 +1385,18 @@
                 },
                 "funhouse-quiz-q2": {
                     "header": "\"Question 2\"",
-                    "text": "\"You've got it!\" The man dances about, his baggy yellow suit flowing losely off his emaciated body beneath it.\"Oh good, now for the next question!\"\n\n\"After its shockingly terrible failure, what is the only McDonalds® location left in the world where you can get a McPizza®?\"",
+                    "text": "\"You've got it!\" The man dances about, his baggy yellow suit flowing losely off the emaciated body beneath it.\"Oh good, now for the next question!\"\n\n\"After its shockingly terrible failure, what is the only McDonalds® location left in the world where you can get a McPizza®?\"",
                     "options": [
                         { "text": "\"McPizza is served in Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
                         { "text": "\"McPizza is served in Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
                         { "text": "\"McPizza is served in Wichita, Kansas\"", "actions": "go:funhouse-quiz-q2-wrong" },
                         { "text": "\"None of the above\"", "actions": "go:funhouse-quiz-q2-wrong" },
-                        { "text": "\"Wait, there's still a McDonalds® that sells pizza?\"", "actions": "go:funhouse-quiz-q2-what" }
+                        { "text": "\"Wait, they make pizza?\"", "actions": "go:funhouse-quiz-q2-what" }
                     ]
                 },
                 "funhouse-quiz-q2-what": {
-                    "header": "\"Wait, there's still a McDonalds® that sells pizza?\"",
-                    "text": "\"Indeed! The McPizza® was a staple of the McDonalds® menu in the 90s, but it was a financial failure due to it taking almost a half hour to prepare. It was discontinued in 2000. However, there is still one location that sells it! Now, tell me where it is!\"",
+                    "header": "\"Wait, they make pizza?\"",
+                    "text": "\"Indeed! The McPizza® was a staple of the McDonalds® menu in the 90s, but it was a financial failure due to it taking almost a half hour to prepare. It was discontinued in 2000. However, there is still one location that sells it! Now, tell me. Where is it!\"",
                     "options": [
                         { "text": "\"McPizza is served in Orlando, Florida\"", "actions": "go:funhouse-quiz-q3" },
                         { "text": "\"McPizza is served in Cleveland, Ohio\"", "actions": "go:funhouse-quiz-q2-wrong" },
@@ -1167,23 +1406,23 @@
                 },
                 "funhouse-quiz-q2-wrong": {
                     "header": "\"Wrong\"",
-                    "text": "\"Oh yes! You got it wrong!\" the man giggled with glee. \"Every true customer knows that the only place to get the McPizza® as of now is in Orlando, Florida. A single McDonalds® restaurant serves it. Now, come here and give me a McPizza that neck of yours, haha!",
+                    "text": "\"Oh yes! You got it wrong!\" the man giggled with glee. \"Every true customer knows that the only place to get the McPizza® as of now is in Orlando, Florida. It's the only McDonalds® restaurant serves it. Now, come here and give me a McPizza that neck of yours, haha!\n\nThe clown moved so fast he became a blur, leaping at you, mouth wide open. You try to run, but within moments the man's limbs and around you, clutching and pulling as he sinks his teeth into your neck. You feel a sharp pain, and then nothing.",
                     "options": [
                         { "text": "Die", "actions": "go:funhouse-quiz-q2-wrong-2" }
                     ]
                 },
                 "funhouse-quiz-q2-wrong-2": {
                     "header": "Heaven",
-                    "text": "Oh hey there, it's me, God. Haha! It looks like that Ronald guy got you with the second question. Yeah, the '®McPizza that neck' wasn't my best line, but I don't have time to workshop this stuff too much.\n\nAlso, you know there's a whole podcast about the pizza, right? 302 episodes last I checked. Here's a link if you want to check it out:\n\n https://www.pizzaatmcdonalds.com/\n\nAnyways, I'm not going to make you start all over. I'll send you back to the question so you can try it again.",      
+                    "text": "Oh hey there, it's me, God. Haha! It looks like that Ronald guy got you with the second question. Yeah, the 'give me a McPizza® that neck' wasn't my best line, but I don't have time to workshop this stuff too much.\n\nAlso, you know there's a whole podcast about the pizza, right? 302 episodes last I checked. Here's a link if you want to check it out:\n\n pizzaatmcdonalds.com\n\nAnyways, I'm not going to make you start all over. I'll send you back to the question so you can try it again.",      
                     "options": [
                         { "text": "Okay, thank you God, you're so cool", "actions": "go:funhouse-quiz-q2" }
                     ]
                 },
                 "funhouse-quiz-q3": {
                     "header": "\"Question 3\"",
-                    "text": "\"Yes! Yes! Yes! You're sooo good.\" He skips about with glee before abruplty stopping to shout \"LAST QUESTION!\"\n\n\"How many arms did the purple McDonalds® mascot, and dear friend of mine, have at his first debut. I'll give you a hint, it's not two! Haha!\"",
+                    "text": "\"Yes! Yes! Yes! You're sooo good.\" He skips about with glee before abruplty stopping to shout \"LAST QUESTION!\"\n\n\"How many arms did the big purple McDonalds® mascot, have at his first debut. I'll give you a hint, it's not two! Haha!\"",
                     "options": [
-                        { "text": "\"Grimace had two arms\"", "actions": "go:funhouse-quiz-q3-what" },
+                        { "text": "\"Grimace had five arms\"", "actions": "go:funhouse-quiz-q3-what" },
                         { "text": "\"Grimace had four arms\"", "actions": "go:funhouse-quiz-q3-what" },
                         { "text": "\"Grimace had six arms\"", "actions": "go:funhouse-quiz-q3-what" },
                         { "text": "\"Grimace had eight arms\"", "actions": "go:funhouse-quiz-q3-what" },
@@ -1191,8 +1430,8 @@
                     ]
                 },
                 "funhouse-quiz-q3-what": {
-                    "header": "\"You know Grimace?\"",
-                    "text": "\"DO NOT SPEAK HIS NAME\" He lurched forward, eyes wide and mouth agape. \"NEVER SAY HIS NAME!\"",
+                    "header": "Question 3",
+                    "text": "\"DO NOT SPEAK HIS NAME\" He lurched forward, eyes wide and mouth agape. \"NEVER SAY HIS NAME! YOU MUST ONLY SAY THE NUMBER OF ARMS\"",
                     "options": [
                         { "text": "\"So I should not say Grimace?\"", "actions": "go:funhouse-quiz-q3-what-2" }
                     ]
@@ -1228,7 +1467,7 @@
                 },
                 "escape-from-grimace-2": {
                     "header": "Escape from Grimace",
-                    "text": "You hesitate for a moment, but the entire PlayPlace® lurches as you hear another thud, Grimace is getting closer. You leap down the slide, and after a short turn, you fall through the air into another round plastic chamber, but in the center is Ronald McDonald®'s Car. It's long, red, and shaped like a massive clown shoe, complete with gold arches for a windshield.\n\nYou land squarely in the passenger's seat. Ronald is on your left. He's now wearing a pair of bright yellow sunglasses and is holding a Glock. He turns to you and says in a deep voice \"Buckle up, kid. It's time to clown.\" before flooring it. The car lurches forward, and you're off.",
+                    "text": "You hesitate for a moment, but the entire PlayPlace® lurches as you hear another thud, Grimace is getting closer. You leap down the slide, and after a short turn, you fall through the air into another round plastic chamber, but in the center is Ronald McDonald®'s Car. It's long, red, and shaped like a massive clown shoe, complete with gold arches for a windshield.\n\nYou land squarely in the passenger's seat. Ronald is on your left. He's wearing a pair of bright yellow sunglasses and is holding a Glock. He cocks the weapon, turns to you and says in a deep voice \"Buckle up, kid. It's time to clown.\" before flooring it. The car lurches forward, and you're off.",
                     "options": [
                         { "text": "Hell Yeah!", "actions": "go:escape-from-grimace-3" }
                     ]
@@ -1249,7 +1488,7 @@
                 },
                 "escape-from-grimace-5": {
                     "header": "Escape from Grimace",
-                    "text": "Ronald drives the car into the light, and you find yourself in front of a house, actually, it's the Cullen's house. You get out of the car and Ronald drives off into the night. \"No,\" you protest, \"I want to help you.\"Ronald's lips curve into a smile, red as ketchup gleaming beneath his clown makeup. \"You're brave kiddo. But this job, ain't for a small fry.\"\n\nThe car peels out, and you're left standing in front of the Cullen's house.",
+                    "text": "Ronald drives the car into the light, and you find yourself in front of a house, actually, it's the Cullen's house. Ronald tells you to get out.\n\n\"No,\" you protest, \"I want to help you.\"Ronald's lips curve into a smile, red as ketchup gleaming beneath his clown makeup. \"You're brave kiddo. But this job, ain't for a small fry.\"\n\nThe car peels out, and you're left standing in front of the Cullen's house.",
                     "options": [
                         { "text": "I guess that's it then", "actions": "go:escape-from-grimace-6" }
                     ]
@@ -1263,7 +1502,7 @@
                 },
                 "escape-from-grimace-7": {
                     "header": "Safe",
-                    "text": "\"What happened?\" Carlisle asked, \"I heard a loud noise and then you were gone.\"\n\n\"I was in the PlayPlace® and I got lost. There was a terrifying clown man, and Grimace was--\" I was cut off by Carlisle's embrace, and found that even his cold skin was comforting in the wake of what she had just experienced. She had always admired Carlisle. He was intelligent, controlled, and exuded a calm strength that Bella found comforting.",
+                    "text": "\"What happened?\" Carlisle asked, \"I heard you went into the basement but I couldn't find you.\"\n\n\"I was in the PlayPlace® and I got lost.\" You explained \" There was a terrifying clown man, and Grimace was--\" you were cut off by Carlisle's embrace, and found that even his cold skin was comforting in the wake of what you had just experienced. You had always admired Carlisle. He was intelligent, controlled, and exuded a calm strength that you find comforting.",
                     "options": [
                         { "text": "Kiss Carlisle", "actions": "go:post-grimace-kiss-carlisle" },
                         { "text": "Sink deeper into Carlisle's embrace", "actions": "go:post-grimace-sink-deeper" },
@@ -1274,31 +1513,109 @@
                     "header": "Kiss Carlisle",
                     "text": "You tilt your head up, your gaze getting lost in his as he looks down at you in concern. His golden orbs radiate concern, comfort -- and deep within, a shocking sensuality. Your breath catches, carnal thoughts suddenly flooding your mind... You give in to the desire building in your chest.\n\nYou kiss Carlisle. Carlisle freezes, then melts like an ice cream you left out on the counter in 50 degree weather: slowly, then all at once.",
                     "options": [
-                        //TODO
+                        { "text": "Sink deeper into Carlisle's embrace", "actions": "go:post-grimace-sink-deeper" },
+
                     ]
                 },
                 "post-grimace-sink-deeper": {
                     "header": "Sink deeper into Carlisle's embrace",
-                    "text": "You feel like you're in one of those weird immersion pods that rich people say feels like being back in-utero. You're weightless in Carlisle's arms. You almost forget about the PlayPalace, Ronald McDonald, and Grimace... Almost. As if sensing your discomforting thoughts, Carlisle tightens his embrace.",
+                    "text": "You feel like you're in one of those weird immersion pods that rich people say feels like being back in-utero. You're weightless in Carlisle's arms. You almost forget about the PlayPlace®, Ronald McDonald, and Grimace... Almost. As if sensing your discomforting thoughts, Carlisle tightens his embrace.",
                     "options": [
-                        { "text": "You can't forget your experience in the PlayPalace®", "actions": "go:post-grimace-push-carlisle" },
-                        { "text": "Kiss Carlisle", "actions": "go:post-grimace-kiss-carlisle" }
+                        { "text": "You can't forget your experience in the PlayPlace®", "actions": "go:post-grimace-push-carlisle" },
+                        { "text": "Kiss Carlisle", "actions": "go:post-grimace-keep-making-out" }
                     ]
                 },
                 "post-grimace-push-carlisle": {
                     "header": "Push Carlisle away",
-                    "text": "You push back against Carlisle. His solid vampire body takes the hit as if you were nothing more than a dandelion in the breeze. He reluctantly releases you from his embrace, stepping back with his hands up to indicate that he is no threat to you.\n\n\"Why the fuck is the PlayPalace even in your basement? What the fuck is wrong with you?\"\n\nCarlisle mimes taking a big breath in, but you know it's just for show -- he doesn't really need to breathe. \n\n\"I just wanted a play place, really.  It reminds me of my youth. And this one came with a free Ronald McDonald -- how could I say no?\"",
+                    "text": "You push back against Carlisle. His solid vampire body takes the hit as if you were nothing more than a dandelion in the breeze. He reluctantly releases you from his embrace, stepping back with his hands up to indicate that he is no threat to you.\n\n\"Why the fuck is the PlayPlace® even in your basement? What the fuck is wrong with you?\"\n\nCarlisle mimes taking a big breath in, but you know it's just for show -- he doesn't really need to breathe. \n\n\"I just wanted a PlayPlace®, really. It reminds me of my youth. And this one came with a free Ronald McDonald -- how could I say no?\"",
                     "options": [
-                        { "text": "Accept his answer", "actions": "go:TODO"},
+                        { "text": "Accept his answer", "actions": "go:post-grimace-accept"},
                         { "text": "Attack Carlisle", "actions": "go:post-grimace-attack-carlisle"}
+                    ]
+                },
+                "post-grimace-accept": {
+                    "header": "Accept his answer",
+                    "text": "Yeah, that actually that sounds pretty reasonable, you think to yourself. I'd do the same thing if I had a few million to throw on a flight of nostalgic fancy. You nod to Carlisle, and he visibly relaxes, relieved.\n\n\"Are there any more surprises waiting for me in this house?\" You ask. Carlisle chuckles, shaking his head slightly.\n\n\"No, no. I think you've found most of them by now.",
+                    "options": [
+                        {"text": "Make out", "actions": "go:post-grimace-keep-making-out"},
+                        {"text": "Leave", "actions": "go:hub"},
                     ]
                 },
                 "post-grimace-attack-carlisle": {
                     "header": "Attack Carlisle",
                     "text": "You launch yourself at Carlisle, fueled with a passion you can't describe. He holds his hands out as if preparing to catch you if you trip and fall en-route to assaulting his face.\n\nYou shock even yourself when, instead of punching his handsome face right in the kisser, you plant a kiss instead. Carlisle freezes, then melts like an ice cream you left out on the counter in 50 degree weather: slowly, then all at once.",
                     "options": [
-                        { "text": "Keep making out", "actions": "go:TODO" },
-                        { "text": "Run away", "actions": "go:TODO" }
+                        { "text": "Keep making out", "actions": "go:post-grimace-keep-making-out" },
+                        { "text": "Run away", "actions": "go:post-grimace-run-away" }
+                    ]
+                },
+                "post-grimace-run-away": {
+                    "header": "Run away",
+                    "text": "Carlisle's cool body presses against yours as he tilts his head, deepening the kiss. His tongue presses against the seem of your lips as he seeks permission to enter. You open your mouth, and he invades. You cautiously begin your own exploration of his mouth, running your tongue along his teeth. It catches on his lengthened canines. You jerk out of your lustful stupor.\n\n\"Carlisle, we can't do this! What about Esme?\"\n\n\"Don't worry, Bella. I appreciate your consideration, but she and I have an understanding. There's certain needs we can't fulfill for each other.\"",
+                    "options": [
+                        { "text": "You nod, pressing back in Carlisle's embrace, and pick up where you left off.", "actions": "go:post-grimace-keep-making-out" },
+                        { "text": "Go home unfucked", "actions": "go:post-grimace-go-unfucked"}
+                    ],
+                },
+                "post-grimace-go-unfucked": {
+                    "header": "Go home unfucked",
+                    "text": "I'm sorry, Carlisle. I don't think I can do this.\"\n\nHe nods. \"Of course, Bella. I would never want to make you uncomfortable.\"",
+                    "options": [
+                        { "text": "Go home", "actions": "go:hub" }
+                    ]
+                },
+                "post-grimace-keep-making-out": {
+                    "header": "Keep Making Out",
+                    "text": "Carlisle's cool body presses against yours as he tilts his head, deepening the kiss. His tongue presses against the seem of your lips as he seeks permission to enter. You open your mouth, and he invades. You cautiously begin your own exploration of his mouth, running your tongue along his teeth. It catches on his lengthened canines. You pause for a second, wondering for a second how you came to be in this situation, then mentally shrug and continue on.",
+                    "options": [
+                        {"text": "Continue making out", "actions": "go:post-grimace-keep-making-out-2"},
+                    ]
+                },
+                "post-grimace-keep-making-out-2": {
+                    "header": "Continue Making Out",
+                    "text": "After several long minutes, Carlisle draws back slightly. He looks deep into your eyes as if seeking something in them. He seems to find what he's looking for, because he sighs wistfully and lays his forehead on yours. He closes his eyes.\n\n\"Breed me, Bella. With you, I can imagine life taking hold.\"\n\nAn unexpected, but not unwelcome statement. You blink at Carlisle a few times as you process the confession. You've never thought of the mental and emotional toll on Carlisle of being a 24/7 365 Daddy/Zaddy. He must be tired of being in control all the time, you think. He wants to. That, and he just seems to like having kids. Filthy, fertile man. You nod to Carlisle, who let's out a relieved sigh. A shame that vampires can't really get pregnant.",
+                    "options": [
+                        {"text": "\"I'm gonna give you so many babies, Carlisle.\"", "actions": "go:post-grimace-keep-making-out-3"},
+                        {"text": "\"Nope! I'm out, I'm going home\"", "actions": "go:hub"}
+                    ]
+                },
+                "post-grimace-keep-making-out-3": {
+                    "header": "\"I'm gonna give you so many babies, Carlisle.\"",
+                    "text": "Carlisle lets out a full body shudder. You slide your hand possessively down his abdomen. \"You'll look so pretty, round and plump as you nurture my child inside your beautiful body.\" Carlisle moans.",
+                    "options": [
+                        { "text": "Fuck Carlisle", "actions": "go:fuck-carlisle" },
+                        { "text": "Go home", "actions": "go:hub"}
+                    ]
+                },
+                "fuck-carlisle": {
+                    "header": "Fuck Carlisle",
+                    "text": "You fuck. You grind on top of Carlisle until the waves of bliss overwhelm you. Carlisle cries when you cum on his stomach. You whisper in his ear, \"Let it soak in and fill your womb up, baby.\" He comes in response, and cries again.\n\nHours later, you leave the Carlisle with a kiss to his mouth and a pat to his still-flat stomach. He radiates leave and contentment. You wish you could leave him pregnant; you'll keep trying later.",
+                    "options": [
+                        { "text": "Go Home", "actions": "go:hub" }
+                    ]
+                },
+
+
+                
+                "to-mall": {
+                    "header": "Driving to the mall",
+                    "text": "You slide into the passenger's seat of Alice's shiny yellow convertible. It's a little ostentatious for your taste. Alice jumps in beside you.\n\nShe looks spaced out for a moment before grinning, turning the key, and gunning the convertible out of the garage.",
+                    "options": [
+                        { "text": "Hold on tight", "actions": "go:alice-drives-2" },
+                    ]
+                },
+                "alice-drives-2": {
+                    "header": "Alice Drives You Home",
+                    "text": "You grab onto the door handle for dear life as Alice drifts around the corner and onto the main road.\n\n\"Alice, don't you think you should slow down?!\" You yell over the sound of the rushing wind.\n\nAlice laughs again, shaking her head a little as she chirps out, \"Nah, Bella, don't worry! We'll be fine. There's no cops on the way and the traffic isn't too bad — we'll get home in just a jiffy!\" She swerves between traffic with ease.",
+                    "options": [
+                        { "text": "Hold on tighter", "actions": "go:alice-drives-3" },
+                    ]
+                },
+                "alice-drives-3": {
+                    "header": "Alice Drives You Home",
+                    "text": "She seems like a good enough driver that you don't think you'll die in a fiery inferno, but you're not convinced. You hold on tighter to the handle.\n\nTrue to her word, Alice swerves into a parking space right neat the entrance a short 20 minutes later. The drive usually takes an hour.",
+                    "options": [
+                        { "text": "Get out of the car", "actions": "go:mall-hub" },
                     ]
                 },
                 "mall-hub": {
@@ -1307,7 +1624,6 @@
                     "options": [
                         { "text": "Look at clothes", "actions": "go:mall-clothes" },
                         { "text": "Look at makeup", "actions": "go:mall-makeup" },
-                        //TODO { "text": "Look at game store", "actions": "go:mall-games" },
                         { "text": "Eat some food", "actions": "go:mall-food" },
                         { "text": "Leave", "actions": "go:mall-leave", "condition": "clothes > 0,makeup > 0,mall-food > 0" }
                     ]
@@ -1424,9 +1740,9 @@
                 },
                 "mall-food-sweet": {
                     "header": "Sweet Food",
-                    "text": "You head to a little bakery and buy an assortment of pastries. Alice smiles as you bite into a cream-filled donut. She steals a bite, but get a dab of powdered sugar on her nose. You both laugh.",
+                    "text": "You head to a little bakery and buy an assortment of pastries. Alice smiles as you bite into a cream-filled donut. She steals a bite, but gets a dab of powdered sugar on her nose. You both laugh.",
                     "options": [
-                        { "text": "\"I'm glad you're enjoying yourself!\"", "actions": "set:mall-food,go:mall-hub" },
+                        { "text": "\"You've got a little something...\"", "actions": "set:mall-food,go:mall-hub" },
                     ]
                 },
                 "mall-food-savory": {
@@ -1453,35 +1769,30 @@
 
                 "mall-leave": {
                     "header": "Leave the Mall",
-                    "text": "\"Well, Bella, why don't we go back to my house and do a little fashion show? I'm sure my family would love to see your new outfit.\" You start to sputter out a protest but Alice starts laughing before you can get even one full word out. \"No, no, I know you would hate that. We'll save that for a special day later on,\" she says, winking. You let out a sigh of relief, but your stomach still clenches at the thought of a future fashion show.\n\n\"We can just relax, NETFLIX and chill, that kind of thing.\" Alice continues, linking her arm with yours. \"Come on — I'm sure you're exhausted after all this wonderful shopping.\"",
+                    "text": "\"Well, Bella, why don't we go back to my house and do a little fashion show? I'm sure my family would love to see your new outfit.\" You start to sputter out a protest but Alice starts laughing before you can get even one full word out. \"No, no, I know you would hate that. We'll save that for a special day later on,\" she says, winking. You let out a sigh of relief, but your stomach still clenches at the thought of a future fashion show.\n\n\"We can just relax, Netflix and chill, that kind of thing.\" Alice continues, linking her arm with yours. \"Come on — I'm sure you're exhausted after all this wonderful shopping.\"",
                     "options": [
-                        { "text": "Go back to Alice's house", "actions": "go:alice-drives" }
+                        { "text": "Go back to Alice's house", "actions": "set:alice-romance,go:alice-drives" }
                     ]
                 },
                 "alice-drives": {
                     "header": "Alice Drives You Home",
-                    "text": "You slide into the passenger's seat of Alice's shiny yellow convertible. It's a little ostentatious for your taste. Alice flings the shopping bags onto the rear seats and jumps in beside you.\n\nShe looks spaced out for a moment before grinning, turning the key, and gunning the convertible out of the parking space.",
+                    "text": "Makeover complete, you and Alice head back towards the parking lot. Alice shifts the shopping backs to own hand and grabs your hand with the other. She brings it to her mouth and gives it a quick kiss. You draw in a quick breath, and she winks in response.\n\nYou walk back to the car, Alice jauntily pumping your arm back and forth between you. She opens the car door for you and you plop down in the seat. She vaults over the entire car, dropping the shopping bags in the back as she soars over. She drops down into the seat next to you and puts her sunglasses on.\n\n\"Ok, Bella. Let's fly.\"\n\nShe floors it. The tires spin and squeal. You go 0-60, threading through parked cars, and drift out into the road. The Barbie movie soundtrack starts blaring from the speakers.",
                     "options": [
-                        { "text": "Hold on tight", "actions": "go:alice-drives-2" },
+                        { "text": "Sing along to Speed Drive by Charli XCX", "actions": "go:alice-drives-sing" },
+                        { "text": "Sit quietly", "actions": "go:alice-drives-sit" }
+
                     ]
                 },
-                "alice-drives-2": {
-                    "header": "Alice Drives You Home",
-                    "text": "You grab onto the door handle for dear life as Alice drifts around the corner and onto the main road.\n\n\"Alice, don't you think you should slow down?!\" You yell over the sound of the rushing wind.\n\nAlice laughs again, shaking her head a little as she chirps out, \"Nah, Bella, don't worry! We'll be fine. There's no cops on the way and the traffic isn't too bad — we'll get home in just a jiffy!\" She swerves between traffic with ease.",
+                "alice-drives-sing": {
+                    "header": "Sing Along",
+                    "text": "\"Oh, got the top down, tires on fire (on fire) Who are you? I'm livin' my life (uh-huh)\nSee you lookin' with that side eye\nWow, you're so jealous 'cause I'm one of a kind\nWhat you think about me, I don't care (I don't care)\nI'm a classic, real deep, Voltaire\nThe girls who need to know, well, they already know\nThey're over there\nAh-ah, Barbie, you're so fine, you're so fine you blow my mind\nJump into the driver's seat and put it into speed drive\nHot, ridin' through the streets, on a different frequency\nKnow you know just what I mean, we're runnin' through the red lights Ah, Barbie, you're so fine, you're so fine you blow my mind\nJump into the driver's seat and put it into speed drive\nHot, ridin' through the streets, on a different frequency\nKnow you know just what I mean, we're runnin' through the red lights\"",
                     "options": [
-                        { "text": "Hold on tighter", "actions": "go:alice-drives-3" },
+                        { "text": "Continue", "actions": "go:alice-drives-sit" }
                     ]
                 },
-                "alice-drives-3": {
-                    "header": "Alice Drives You Home",
-                    "text": "She seems like a good enough driver that you don't think you'll die in a fiery inferno, but you're not convinced. You hold on tighter to the handle.\n\nTrue to her word, Alice pulls into the Cullen garage a short 20 minutes later. The drive from Port Angeles usually takes an hour.",
-                    "options": [
-                        { "text": "Get out of the car", "actions": "go:alice-drives-4" },
-                    ]
-                },
-                "alice-drives-4": {
-                    "header": "Alice Drives You Home",
-                    "text": "Alice bustles you and the bags out of the car and into the main hallway of the house. \"What do you want to do first?\"",
+                "alice-drives-sit": {
+                    "header": "Driving",
+                    "text": "Alice comes to a smooth stop at a stoplight. A suped-up Mustang rolls up beside you. The driver and his passenger hoot and holler at you and Alice. Alice rolls her eyes, then turns a bright smile to you. \"Hold on, Bella.\"\n\nThe light turns green and you take off. You've never been in a car going so fast. You leave the Mustang behind easily.\n\nAn impossibly short while later, Alice takes the exit towards the Cullen house. She drifts down the entire exit, around the following corner, and part way down the next road.\n\nA few minutes later you pull into the driveway of the house. Alice bustles you and the bags out of the car and into the main hallway of the house. \"What do you want to do first?\"",
                     "options": [
                         { "text": "Use the bathroom", "actions": "go:cullen-bathroom" },
                         { "text": "Go to Alice's room", "actions": "go:alice-room-enter" }
@@ -1541,100 +1852,151 @@
                 },
                 "netflix-and-chill": {
                     "header": "Netflix and Chill",
-                    "text": "You sit down next to Alice. The bed is plush, the most luxurious mattress you've ever felt covered by the smoothest silk sheets. You look down to where your fingers are spread out on the mattress, sinking into the plush. Your fingers are nearly touching Alice's. It would only take a millimeter to breach the distance between.\n\n\"I think… I think a nature documentary would be good?\" You ask hesitantly. You're sure Alice is more of a Love Island kind of girl, but you've always found the sound of Obama's voice titillating.\n\n\"Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.\"",
+                    "text": "You sit down next to Alice. The bed is plush, the most luxurious mattress you've ever felt covered by the smoothest silk sheets. You look down to where your fingers are spread out on the mattress, sinking into the plush. Your fingers are nearly touching Alice's. It would only take a millimeter to breach the distance between.\n\n\"I think… I think a nature documentary would be good?\" You ask hesitantly. You're sure Alice is more of a Love Island kind of girl, but you've always found the sound of Obama's voice titillating.\n\n\"Sure!\" Alice chirps, reaching across the bedspread and picking up a sleek remote. She presses a button and a huge tv emerges from within a built in cabinet on the other side of the room. \"Which do you want to watch?\"",
                     "options": [
-                        { "text": "\"I'm flattered, but let's just stick to the nature documentary for now.\"", "actions": "set:alice-romance,go:grimace-key" }
+                        { "text": "\"The one about the African Savannah.\"", "actions": "go:netflix-and-chill-savannah" },
+                        { "text": "\"The one about the deep sea creatures.\"", "actions": "go:netflix-and-chill-sea" },
+                        { "text": "\"The one about the Amazon rainforest.\"", "actions": "go:netflix-and-chill-rainforest" },
+                    ]
+                },
+                "netflix-and-chill-savannah": {
+                    "header": "African Savannah",
+                    "text": "A few more button presses larer and a smooth baritone voice fills the room, exalting the virtues of national parks and environmental stewardship.\n\nWithin a few minutes, you're twitching in your seat. The sexual tension you'd gotten just a hint of earlier throughout the day has been building and building inside as you listen to Obama's empassioned description of hippo mating practices.\n\nYou finally allow yourself to glance at Alice, only to find her looking at you with a smouldering gaze. \n\n\"Alice…\" you start, but she silenced you with a swift but passionate kiss. It lasts just a moment. Pulling back, she looks deeper into your eyes.\"Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.\"",
+                    "options": [
+                        { "text": "\"Continue\"", "actions": "go:netflix-and-chill-2" }
+                    ]
+                },
+                "netflix-and-chill-sea": {
+                    "header": "Deep Sea Creatures",
+                    "text": "A few more button presses larer and a smooth baritone voice fills the room, exalting the virtues of national parks and environmental stewardship.\n\nWithin a few minutes, you're twitching in your seat. The sexual tension you'd gotten just a hint of earlier throughout the day has been building and building inside as you listen to Obama's empassioned description of manatee mating practices.\n\nYou finally allow yourself to glance at Alice, only to find her looking at you with a smouldering gaze. \n\n\"Alice…\" you start, but she silenced you with a swift but passionate kiss. It lasts just a moment. Pulling back, she looks deeper into your eyes.\"Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.\"",
+                    "options": [
+                        { "text": "\"Continue\"", "actions": "go:netflix-and-chill-2" }
+                    ]
+                },
+                "netflix-and-chill-rainforest": {
+                    "header": "Amazon Rainforest",
+                    "text": "A few more button presses larer and a smooth baritone voice fills the room, exalting the virtues of national parks and environmental stewardship.\n\nWithin a few minutes, you're twitching in your seat. The sexual tension you'd gotten just a hint of earlier throughout the day has been building and building inside as you listen to Obama's empassioned description of sloth mating practices.\n\nYou finally allow yourself to glance at Alice, only to find her looking at you with a smouldering gaze. \n\n\"Alice…\" you start, but she silenced you with a swift but passionate kiss. It lasts just a moment. Pulling back, she looks deeper into your eyes.\"Bella, I want to worship you. Lick my way up your body — not in an evil vampire way, but a sexy vampire way. You have no idea how much you tortured me today. You looked perfection in your new outfit.\"",
+                    "options": [
+                        { "text": "\"Continue\"", "actions": "go:netflix-and-chill-2" }
+                    ]
+                },
+                "netflix-and-chill-2": {
+                    "header": "Netflix and Chill",
+                    "text": "You didn't expect your innocent mall date to end up like this. Not trusting yourself to respond, you nod your head. Alice grins.\n\n\"Don't worry, Bella. I'll take care of you.\" Alice promises as she lays you down beneath her on the bed.\n\nAlice's lithe form sprawls out on top to you as she begins petting and soothing you, gently drawing swirling patterns on any exposed skin that she can reach. She can tell you're nervous.",
+                    "options": [
+                        { "text": "Pillow princess", "actions": "go:netflix-and-chill-pillow" },
+                        { "text": "Tickle Alice", "actions": "go:netflix-and-chill-tickle" }
+                    ]
+                },
+                "netflix-and-chill-tickle": {
+                    "header": "Tickle Alice",
+                    "text": "For some reason, your initial reaction to her ministrations is a strong desire to tickle Alice. You reach out gently, mirroring her soothing swirling movements initially before giving in to your impulse: you reach out to Alice's side and gently tickle her. It only lasts a moment.\n\nAlice stills at the first little wiggle-waffle of your fingers on her cold skin. She shudders, lifting her eyes to yours once her tremors subside. Her pupils are blown wide. \n\n\"Oh, Bella. You don't know the kind of monster I can be. Don't keep teasing me like that unless you're ready to face the consequences.\"",
+                    "options": [
+                        { "text": "Tickle more", "actions": "go:netflix-and-chill-tickle-2" },
+                        { "text": "Pillow princess", "actions": "go:netflix-and-chill-pillow" }
+                    ]
+                },
+                "netflix-and-chill-tickle-2": {
+                    "header": "Tickle More",
+                    "text": "You stare into Alice's eyes. You reach your hand out slowly, running it gently down her arm until your reach the inside of her below. You lift it from her arm and move to her side. You tickle her rapidly.\n\nHer eyes roll back into her head, and she goes a little limp above you. A full body tenor goes through her, and you feel her thighs clench around you.\n\n\"Did you just... come?\" You ask, amazed. She'd squeezed her eyes shut during her body's earthquake, but she opens them and returns your gaze, predatory.\n\nShe pins your hands above your head with one hand.\n\n\"Let's see how you like it.\" She says, and begins her assault.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:netflix-and-chill-pillow"}
+                    ]
+                },
+                "netflix-and-chill-pillow": {
+                    "header": "Alice Takes Control",
+                    "text": "You let Alice take control. You hadn't really expected her to be a dom, but you just feel right beneath her. \n\nHours later, and you're a panting mess of sweat, hair, and cum. Alice still looks pristine — the only hint of her activities in her slightly more ruffled than usual hair. You lay in the bed, panting, feeling the wetness beneath you more and more as your body cools down.\n\n\"Let me clean you up, baby.\" Alice groans as she gently draws a hand down your front from sternum to navel. \"I'll be right back.\"",
+                    "options": [
+                        { "text": "\"Continue\"", "actions": "go:grimace-key" }
                     ]
                 },
                 "netflix-just-chill": {
                     "header": "Just Chill",
                     "text": "\"I'm pretty tired. I think my brain can only handle watching a few episodes of something,\" You reply.\n\n\"Sure!\" Alice reaches across the bedspread. Esme comes in with a fresh smoothie for Bella. She's a gardening enthusiast and is so pleased to finally have someone to try out home-grown cooking with. Usually she donated her fresh produce to the food pantry or the elementary school.\n\nBella spills a smoothie on herself.",
                     "options": [
-                        { "text": "\"Oh no, are you alright? Let me help you clean up.\"", "actions": "set:alice-romance,go:grimace-key" }
+                        { "text": "\"Oh no, are you alright? Let me help you clean up.\"", "actions": "go:grimace-key" }
                     ]
                 },
                 "grimace-key": {
-                    "header": "Grimace Key",
-                    "text": "Alice leaves the room to get a warm, wet cloth to wipe you down with. Laying there, you spot something shining out of the corner  of your eye. Bookshelf. Iconic McDonald's double arches. Huh. I didn't know Alice was a McDonald's fan. That's so capitalist of her. Attached to the arches is a key. Without thinking, you grab the key and stuff it in your backpack. You hear Alice remark something to Esme in the hallway, and hurry back to the bed to lie innocently in your mess again.",
+                    "header": "Mysterious key",
+                    "text": "Alice leaves the room to get a warm, wet cloth to wipe you down with. Laying there, you spot something shining out of the corner of your eye. Bookshelf. Iconic McDonald's double arches. Huh. I didn't know Alice was a McDonald's fan. That's so capitalist of her. Attached to the arches is a key. Without thinking, you grab the key and stuff it in your backpack. You hear Alice remark something to Esme in the hallway, and hurry back to the bed to lie innocently in your mess again.",
                     "options": [
-                        { "text": "\"I wonder what the key is for? I should ask Alice later.\"", "actions": "set:cullen-basement-key,go:mall-hub", "condition": "seen-basement == 0" },
-                        { "text": "\"I wonder if this opens the basement...\"", "actions": "set:cullen-basement-key,go:mall-hub", "condition": "seen-basement > 0" }
+                        { "text": "\"I wonder what the key is for?\"", "actions": "set:cullen-basement-key,go:grimace-key-2", "condition": "seen-basement == 0" },
+                        { "text": "\"I wonder if this opens the basement...\"", "actions": "set:cullen-basement-key,go:grimace-key-2", "condition": "seen-basement > 0" }
                     ]
                 },
-                
-
+                "grimace-key-2": {
+                    "header": "Finishing the Show",
+                    "text": "Alice returns with a warm, wet cloth to wipe you down with. She's so gentle and caring. You feel so safe with her. She's so beautiful. You can't help but stare at her as she cleans you up. She's so perfect. You're so lucky to have her.\n\n\"Bella? Are you alright?\" Alice asks, concerned. You realize you've been staring at her for a while. You blush and look away.\n\n\"I'm fine. I'm just really happy to be here with you.\"\n\n\"I'm happy to be here with you too, Bella. I'm so glad you're here.\"\n\nAlice finishes cleaning you up and you both lay down to watch Netflix. You fall asleep in her arms.",
+                    "options": [
+                        { "text": "Continue", "actions": "go:grimace-key-3" }
+                    ]
+                },
+                "grimace-key-3": {
+                    "header": "After a Short Name",
+                    "text": "After a short nap, you wake up to Alice gently stroking your hair.\n\n\"Hey, sleepyhead.\" She smiles at you. \"Thanks for watching with me. I had a great time.\"",
+                    "options": [
+                        { "text": "Leave", "actions": "go:cullen-hub" }
+                    ]
+                },
                 "prom-prep": {
-                    "header": "Prom Preparation",
+                    "header": "Prom",
                     "text": "Who do you ask to prom?",
                     "options": [
                         { "text": "Edward", "actions": "go:prom-edward", condition: "edward-romance > 0" },
-                        { "text": "Jacob", "actions": "go:prom-jacob", condition: "jacob-romance > 0" },
                         { "text": "Carlisle", "actions": "go:prom-carlisle", condition: "carlisle-romance > 0" },
                         { "text": "Alice", "actions": "go:prom-alice", condition: "alice-romance > 0" },
-                        { "text": "Victoria", "actions": "go:prom-victoria", condition: "victoria-romance > 0" },
+                        { "text": "Edward", "actions": "go:prom-bees", condition: "bee-curse > 0,edward-romance > 0" },
+                        { "text": "Carlisle", "actions": "go:prom-bees", condition: "bee-curse > 0,carlisle-romance > 0" },
+                        { "text": "Alice", "actions": "go:prom-bees", condition: "bee-curse > 0,alice-romance > 0" },
                         { "text": "No one", "actions": "go:prom-alone" },
                     ]
-                }, // Jacob where the hell have you been loca, (who are you / become date options)
-                // Jacod imprints on renesme, so in epilogue she has a period and he loses all interests
+                },
                 "prom-edward": {
-                    "header": "Prom",//TODO
-                    "text": "You arrive at the prom. ",
+                    "header": "Prom",
+                    "text": "You arrive at the prom with Edward. The room is filled with the soft glow of fairy lights, casting an enchanting aura over the crowd. Edward, with his brooding charm and magnetic presence, effortlessly draws you in.\n\n\"Shall we?\" he asks, extending his hand towards you. His eyes, a mesmerizing shade of gold, are filled with a mysterious allure. As you take his hand, he leads you to the dance floor, his movements fluid and elegant. The world seems to blur around you as you dance, lost in each other's eyes.\n\n\"Bella,\" Edward murmurs, his voice barely above a whisper. \"In my hundred years of existence, I've never met anyone who has captivated me as you have. You've given my life a purpose, a meaning.\"\n\nHis confession leaves you breathless, your heart pounding in your chest. \"Edward,\" you respond, your voice trembling with emotion. \"I love you too. More than you could ever know.\"\n\nThe night is filled with shared glances, whispered confessions, and a love that is as timeless as it is profound. It's a night that will forever be etched in your heart.",
                     "options": [
-                        { "text": "Years Later...", "actions": "go:epilogue-edward" },
+                        { "text": "Years later...", "actions": "go:epilogue-edward" },
                     ]
                 },
                 "epilogue-edward": {
                     "header": "Epilogue",
-                    "text": "You arrive at the prom.",//TODO
+                    "text": "Years pass, but your love for Edward remains as strong as ever. You've spent countless days and nights together, sharing laughter, tears, and everything in between. His love is like a beacon, guiding you through the darkest nights and lighting up your world.\n\nEdward's eyes, always filled with love and adoration when he looks at you, are the first thing you see every morning and the last thing you see every night. His touch, gentle and caring, is a constant reminder of his unwavering love for you.\n\n\"Bella,\" Edward whispers one night, his voice soft and full of emotion. \"I've loved you since the moment I saw you. And I will continue to love you for all eternity.\"\n\nHis words, so full of passion and sincerity, bring tears to your eyes. \"I love you too, Edward,\" you reply, your voice choked with emotion. \"Forever and always.\"\n\nAs you spend your life with Edward, you realize that love isn't about how much time you have, but what you do with it. And with Edward, every moment is a treasure, every second filled with love and passion.",
                     "options": [
                         { "text": "Restart", "actions": "restart:" },
                     ]
                 },
                 "prom-carlisle": {
-                    "header": "Prom",//TODO
-                    "text": "You arrive at the prom",
+                    "header": "Prom",
+                    "text": "You arrive at the prom with Carlisle. The room is filled with the sounds of laughter and music, and the lights reflect off the decorations, creating a magical atmosphere.\n\nCarlisle, ever the gentleman, offers you his arm and leads you to the dance floor. His movements are graceful and confident from his years of experience. As you dance, he looks at you with a soft smile, his eyes full of warmth and affection.\n\n\"Bella,\" Carlisle says, his voice calm and soothing. \"I've lived for centuries, seen countless things and met numerous people. But being here with you, it's a unique experience that I wouldn't trade for anything.\"\n\nHis words touch your heart and you can't help but smile at him. \"I feel the same way, Carlisle.\"\n\nThe night is filled with laughter, dancing and shared glances. It's a night that you will always remember.",
                     "options": [
-                        { "text": "Years Later...", "actions": "go:epilogue-carlisle" },
+                        { "text": "Years later...", "actions": "go:epilogue-carlisle" },
                     ]
                 },
                 "epilogue-carlisle": {
                     "header": "Epilogue",
-                    "text": "You arrive at the prom.",//TODO
+                    "text": "Years later, you find yourself looking back on that night with a fond smile. Being with Carlisle has brought a sense of peace and happiness into your life that you never thought possible.\n\nCarlisle, with his centuries of wisdom and kindness, has been your rock through everything. His love for you is unwavering, his devotion absolute. He's always there to offer a comforting word, a gentle touch, a loving smile.\n\nYou spend your days exploring the world with him, learning about history from someone who has lived through it. Nights are spent in each other's arms, sharing stories and dreams. His presence is a constant in your life, a beacon of light in the darkness.\n\nBeing with Carlisle has taught you many things, but the most important is this: Love is not about how long you live, but how deeply you feel. And with Carlisle, you feel love deeply, completely, unconditionally.\n\nAs you look into his eyes, the same warmth and affection from that prom night still present, you know that you wouldn't trade this life with him for anything. This is your forever, and it's more beautiful than you could have ever imagined.",
                     "options": [
                         { "text": "Restart", "actions": "restart:" },
                     ]
                 },
                 "prom-alice": {
-                    "header": "Prom",//TODO
-                    "text": "You arrive at the prom",
+                    "header": "Prom",
+                    "text": "You arrive at the prom with Alice. The room is buzzing with excitement, the lights reflecting off the glittering decorations. Alice, with her vibrant energy and infectious smile, immediately pulls you into the crowd.\n\n\"Come on, Bella!\" she exclaims, her eyes sparkling with excitement. She leads you to the dance floor, her movements graceful and elegant. As you dance, she spins you around, her laughter ringing out over the music.\n\n\"Bella,\" Alice says, her voice filled with warmth. \"I've seen many futures, but the one I want most is the one with you in it.\"\n\nHer words catch you by surprise, but the sincerity in her eyes makes your heart flutter. \"Alice,\" you reply, your voice barely above a whisper. \"I want that future too.\"\n\nThe rest of the night is a blur of dancing, laughter, and shared smiles. It's a night you'll cherish forever.",
                     "options": [
-                        { "text": "Years Later...", "actions": "go:epilogue-alice" },
+                        { "text": "Years later...", "actions": "go:epilogue-alice" },
                     ]
                 },
                 "epilogue-alice": {
                     "header": "Epilogue",
-                    "text": "You arrive at the prom.",//TODO
-                    "options": [
-                        { "text": "Restart", "actions": "restart:" },
-                    ]
-                },
-                "prom-victoria": {
-                    "header": "Prom",
-                    "text": "You arrive at the prom",//TODO
-                    "options": [
-                        { "text": "Years Later...", "actions": "go:epilogue-victoria" },
-                    ]
-                },
-                "epilogue-victoria": {
-                    "header": "Epilogue",
-                    "text": "You arrive at the prom.",//TODO
+                    "text": "Years later, you find yourself looking back at that magical night at prom, the night that marked the beginning of your life with Alice. It was a life filled with laughter, and countless adventures. Alice, with her vibrant energy and boundless love, filled your days with joy and your nights with comfort.\n\nWith Alice, life was a beautiful dance, a dance you never wanted to end. Her love was a song that played endlessly in your heart. And as you danced and loved, you realized that this was your forever, your eternity. And it was more beautiful than anything you could have ever imagined.\n\n\"I love you, Alice,\" you whisper, your words echoing in the quiet night. And as Alice pulls you closer, her eyes reflecting the moonlight, you know that this is your happily ever after.",
                     "options": [
                         { "text": "Restart", "actions": "restart:" },
                     ]
                 },
                 "prom-alone": {
                     "header": "Prom",
-                    "text": "You arrive at the prom and the red and blue lights dance across the crowds. The room is full of people talk and generally having a good time.\n\nYou start to dance with your friends Jessica and Lauren for a few minutes before a slow song comes on. All the couples come out to share the moment together. You return to your table and watch them swaying slowly to the rhythm of the music.\n\n\"Hey Bella!\" A voice calls our from behind you \"Where the hell have you been, loca?\"",
+                    "text": "YYou arrive at the prom alone. The room is filled with laughter, music, and the shimmering lights reflecting off the decorations. You mingle with your friends, enjoy the food, and even dance a bit.\n\nEverything is going well until a slow song comes on. You watch as couples pair off and head to the dance floor, their movements slow and intimate. \n\n\"Hey Bella!\" A voice calls our from behind you \"Where the hell have you been, loca?\"",
                     "options": [
                         { "text": "\"Oh, hi Jacob!", "actions": "go:prom-alone-2" },
                     ]
@@ -1649,21 +2011,21 @@
                 },
                 "prom-alone-3": {
                     "header": "\"I'm good, thanks\"",
-                    "text": "\"Okay! I... what?\" He asks, his face contorting as if trying to find the right emotion\n\n\"I'm okay, I don't want to dance\"\n\nJacob stood motionless, staring at Bella for several moments.\n\n\"BELLLAAAAA!\" He shrieked, looking around looking dazed and confused. \"How could you do this to me loca!?\"",
+                    "text": "\"Okay! I-- what?\" He asks, his face contorting as if trying to find the right emotion\n\n\"I'm okay, I don't want to dance\"\n\nJacob stood motionless, staring at Bella for several moments.\n\n\"BELLLAAAAA!\" He shrieked, looking around looking dazed and confused. \"How could you do this to me loca!?\"",
                     "options": [
                         { "text": "\"I'm sorry\"", "actions": "go:prom-alone-4" },
                     ]
                 },
                 "prom-alone-4": {
                     "header": "\"I'm sorry\"",
-                    "text": "\"y-your eggs Bella!\" Jacob stammered \"I want-- I need them Bella\"\n\n\"Jacob, you're scaring me\" You pleaded.\n\n\"BELLA!\" He screamed \"I-I'm telling you there's an egg in you and I neeeeed it. I imprinted on it. Bella egg, I need.\"",
+                    "text": "\"y-your eggs Bella!\" Jacob stammered \"I want-- I need the egg. B-BELLA!\"\n\n\"Jacob, you're scaring me\" You pleaded.\n\n\"BELLA!\" He screamed \"I-I'm telling you there's an egg in you and I neeeeed it. I imprinted on it. Bella egg, I need.\"",
                     "options": [
                         { "text": "\"What?\"", "actions": "go:prom-alone-5" },
                     ]
                 },
                 "prom-alone-5": {
                     "header": "\"What?\"",
-                    "text": "\"BELLA!\"\n\n\"Why do you keep shouting my name? I'm still right here.\"\n\nHe stopped for a moment, looked confused, he seemed to contemplate what he was doing, and took a moment to collect his thoughts before explaining, in the simplest way possible\n\n\"I need... I need your... eggs?\"",
+                    "text": "\"BELLA!\"\n\n\"Why do you keep shouting my name? I'm still right here.\"\n\nJacob stopped for a moment, looked confused, he seemed to contemplate his previous words and actions, and took a moment to collect his thoughts and calm himself before explaining\n\n\"I need... I need your... egg.\"",
                     "options": [
                         { "text": "\"I'm leaving\"", "actions": "go:epilogue-alone" },
                     ]
@@ -1675,22 +2037,27 @@
                         { "text": "Restart", "actions": "restart:" },
                     ]
                 },
-                // TODO epilogues from Cultist Simulator
                 "prom-jacob": {
                     "header": "\"I'd love to\"",
-                    "text": "Jacob grabs your hand and leads you to the dance floor. He pulls you in close, your face pressed against his chest. \"I couldn't stand to see such a beautiful girl on her own\" He said softly.\n\n\"I'm glad you're here\" I said as I listened to the rhythmic beating of his heart.\n\nWe didn't speak much during the dance, we both were immersed in the moment, and in each other. We could have swayed together for hours without noticing, it felt like time had stopped for us.\n\nThe music changed to something more upbeat, but you and Jacob spent the whole night together",
+                    "text": "Jacob grabs your hand and leads you to the dance floor. He pulls you in close, your face pressed against his chest. Jacob pulls you closer, his hand resting gently on your waist. His eyes meet yours, and in them, you see a depth of emotion that takes your breath away.\n\n\"Bella,\" Jacob says, his voice low and sincere. \"I've known you for a long time, and I've always cared about you. But somewhere along the way, that care turned into something deeper. I...I love you, Bella.\"\n\nHis confession leaves you speechless, but the look in his eyes tells you he means every word. \"Jacob,\" you whisper, your heart pounding. \"I love you too.\"\n\nThe rest of the night is a blur of slow dances, whispered confessions, and shared smiles. It's a night you'll remember forever.",
                     "options": [
                         { "text": "\"I love you\"", "actions": "go:epilogue-jacob" },
                     ]
                 },
                 "epilogue-jacob": {
                     "header": "Epilogue",
-                    "text": "You and Jacob grow closer, TODO use cultist sim story.\n\nThat is until one day, he seemed to lose interest in me. It was so sudden I don't know how to explain it. Although one time, late at night, I heard him crying, muttering about eggs? It was strange. Soon after we broke off the marriage. I found that I could never love someone anyone the way I loved jacob.",
+                    "text": "Years pass, but your love for Jacob never waned. You shared a life full of laughter, adventure, and love. His warm smile was the first thing you saw each morning, and his gentle voice was the last thing you heard each night.\n\nJacob's love was like the sun - warm, constant, and full of life. His laughter filled your days, and his arms provided a safe haven at night.\n\nBut one day, the light in Jacob's eyes dimmed, his smiles became less frequent. He grew distant, his warm presence fading like a sunset at the end of the day. His laughter, once the soundtrack of your life, was replaced by silence.\n\n\"Jacob,\" you said one day, 'what's wrong?' He looked at you, his eyes filled with a sadness you'd never seen before. \"I'm sorry, I have to go.\"\n\nAnd just like that, the sun that was Jacob Black began to set. Your world, once filled with warmth and light, was plunged into a cold, endless night. You were left alone, a half without its whole, a heart without its beat. The love story that was supposed to last forever had come to an abrupt end.",
                     "options": [
                         { "text": "Restart", "actions": "restart:" },
                     ]
                 },
-
+                "prom-bees": {
+                    "header": "Prom",
+                    "text": "You're at prom, waiting outside for your date to appear. You watch as your date gets out of the car, and with a \"pop!\" Their body immediately transforms into a buzzing mass of bees, taking a vaguely humanoid shape.\n\nThe creature makes an almost cicada like sound from the movements of thousands of tiny wings. It lumbers awkwardly towards you and hands you a bouquet of flowers. It seems nice.\n\nYou aren't sure what happened to your previous date, but it appears they've transformed into bees, so you figured you'd make the most of the situation. The swarming mass of bees is quite the charmer and has some sick moves on the dance floor. A slow song comes on and the humming creature extends a hand to you in a flamboyant gesture. You take it, and dance slowly. As you do, you press into the amalgamation of bees, and a few individuals crawl about your hands and face tenderly. You feel their love and warmth. And then, one by one, each of the tiny insects flew away. When the song ended, a single bee remained on my finger for a moment, before leaving me forever.",
+                    "options": [
+                        { "text": "Years later...", "actions": "go:epilogue-alone" }
+                    ]
+                }
             };
 
             let names = new Set();
@@ -1700,10 +2067,13 @@
                 let name = room[0];
                 let hasExit = false;
                 if (room[1].options === undefined) {
-                    console.warn("No options for room: " + name);
+                    console.error("No options for room: " + name);
                 }
                 for (let j = 0; j < room[1].options.length; j++) {
                     let option = room[1].options[j];
+                    if (option.actions === undefined) {
+                        console.error("No actions for room: " + name);
+                    }
                     let parts = option.actions.split(",")
                     for (let k = 0; k < parts.length; k++) {
                         let part = parts[k];
@@ -1726,6 +2096,39 @@
                 }
                 names.add(name);
             }
+
+            let inaccessible = new Set(names);
+            let edge = new Set(["start"]);
+            while (edge.size > 0) {
+                let newEdge = new Set();
+                edge.forEach(e => {
+                    inaccessible.delete(e);
+                    let room = web[e];
+                    if (room === undefined) {
+                        console.warn("No room: " + e);
+                        return;
+                    }
+                    for (let j = 0; j < room.options.length; j++) {
+                        let option = room.options[j];
+                        let parts = option.actions.split(",")
+                        for (let k = 0; k < parts.length; k++) {
+                            let part = parts[k];
+                            let op = part.split(":")[0];
+                            let arg = part.split(":")[1];
+                            if (op === "go") {
+                                if (inaccessible.has(arg)) {
+                                    newEdge.add(arg);
+                                }
+                            }
+                        }
+                    }
+                });
+                edge = newEdge;
+            }
+            inaccessible.forEach(n => {
+                console.warn("Inaccessible room: " + n);
+            });
+
             unusedNames = new Set(names);
             links.forEach(l => {
                 if (!names.has(l)) {
@@ -1737,30 +2140,16 @@
                 console.warn("Room has no links: " + n);
             });
 
-            /*
-            
-
-
-
-> roll it and see what happens
-> Leave
-
-You roll the die on the table, it begins to spin like a top on the table, spinning faster and faster. It emits beams of light that flash across the room like a disco ball. It emits a warbling sound that pulses faster and faster, until eventually the sound and light become so intense that it drowns out everything else
-
-Then, you find yourself on a ship that appears to be flying through space. A small potted plant with limbs made of roots walls over to you. It says in a high pitched voice \"Hello! And welcome to The Chimera!\"
-
-> \"huh?\"
-
-\"This is our ship! And I am Peepo\"
-
-((Hey Alex, I've got a really weird question but please humor me, it'll be very funny.
-In the campaign, let's say you wanted to kill off / get rid of a minor character that no one really cares about. For whatever reason, you want them gone as quickly as possible so the story can move on without them. What event would you cause in universe to get rid of them))
-
-Events take place, eventually Bella is killed or removed from the world
-
-Returning to \"reality\":
-You fall to the ground with a thud, you're back in the game room, holding the strange die from earlier.
-*/
+            let s = "";
+            for (let i = 0; i < Object.entries(web).length; i++) {
+                let room = Object.entries(web)[i][1];
+                s += room.header + "\n"
+                s += room.text + "\n"
+                room.options.map(o => {
+                    s += o.text + "\n";
+                });
+            }
+            console.log(s)
             // Here it is: ®
         </script>
     </footer>
