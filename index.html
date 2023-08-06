@@ -14,7 +14,7 @@
                 background-color: #222;
                 color: #fff;
                 font-family: 'Lato', sans-serif;
-                font-size: 16px;
+                font-size: 24px;
                 margin: 0;
                 padding: 0;
             }
@@ -22,20 +22,12 @@
             .content {
                 margin: 0;
                 padding: 0;
-                width: 600px;
+                width: 800px;
                 margin-left: auto;
                 margin-right: auto;
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
-            }
-
-            @media screen and (max-width: 800px) {
-                .content {
-                    margin: 0;
-                    padding: 0;
-                    width: 100%;
-                }
             }
 
             h1 {
@@ -56,6 +48,7 @@
                 padding-right: 10px;
                 padding-top: 10px;
                 padding-bottom: 10px;
+                margin-bottom: 20px;
                 background-color: #222;
                 white-space: pre-wrap;
                 font-family: 'Lato', sans-serif;
@@ -79,6 +72,7 @@
                 padding-right: 10px;
                 padding-top: 10px;
                 padding-bottom: 10px;
+                margin-bottom: 5px;
                 background-color: #222;
                 color: #fff;
                 border: 1px solid #fff;
@@ -86,6 +80,7 @@
                 display: block;
                 text-align: left;
                 font-family: 'Lato', sans-serif;
+                font-size: 20px;
             }
 
             button:hover {
@@ -137,7 +132,7 @@
             }
 
             .bottom button {
-                width: 70px;
+                width: 100px;
                 text-align: center;
                 margin-left: 10px;
             }
@@ -300,15 +295,18 @@
             }
 
             function setState(newState) {
-                state = newState;
                 updateText();
+                console.log("2")
                 if (newState != state) {
+                    state = newState;
                     fadeOut();
                 }
+                console.log("4")
                 save("auto");
             }
 
             function fadeOut() {
+                console.log("1")
                 textDiv.classList.add("out");
                 setTimeout(fadeIn, 300);
             }
@@ -388,7 +386,7 @@
                     "text": "\"I know what you are\" I said\n\n\"Say it.\" Edward stared at me, intent on my response \"Out loud.\"",
                     "options": [
                         { "text": "\"Vampire\"", "actions": "go:you-are-vampire" },
-                        { "text": "\"A good friend\"", "actions": "remove:edward-reputation,go:you-are-friend" },
+                        { "text": "\"A good friend\"", "actions": "add:edward-friendzoned,go:you-are-friend" },
                         { "text": "\"Cedric Diggory\"", "actions": "go:you-are-cedric", "condition": "defiance == 0"  },
                         { "text": "\"I reaaaly think you're Cedric Diggory\"", "actions": "go:defiant", "condition": "defiance == 1" },
                         { "text": "\"I still think you're Cedric Diggory\"", "actions": "go:defiant-2", "condition": "defiance == 2" },
@@ -397,7 +395,7 @@
                 },
                 "you-are-friend": {
                     "header": "\"A good friend\"",
-                    "text": "\"What?!\" Edward stammered. \"I saved your life!\"\n\nI shrugged, \"Well... You're great to hang out with and all, but dating?\" I scoffed, \"I'd prefer someone who doesn't match the paleness of my IKEA furniture. Sorry bud.\"\n\n\"I thought you were going to say I'm a cool sexy vampire\" Edward cried out, tears forming in his eyes.",
+                    "text": "\"What?!\" Edward stammered. \"You just think of me as a friend? I thought I could be something more!\"\n\nI shrugged, \"Well... You're great to hang out with and all, but dating?\" I scoffed, \"I'd prefer someone who doesn't match the paleness of my IKEA furniture. Sorry bud.\"\n\n\"I thought you were going to say I'm a cool sexy vampire\" Edward cried out, tears forming in his eyes.",
                     "options": [
                         { "text": "\"A What?!\"", "actions": "go:explain-vampire" }
                     ]
@@ -491,7 +489,7 @@
                     "header": "\"Show me your fridge\"",
                     "text": "\"Oh, sure... yeah, let's go home and I'll show you\"\n\nEdward leads you back to his house, a modern home with tall glass walls and a beautiful open floor plan. He leads you into the kitchen, an extravagant space that exudes an air of modern elegance. Gleaming stainless steel appliances stand against the backdrop of sleek, black countertops. A large island fills the center of the room, while floor-to-ceiling windows offer a breathtaking view of the surrounding forest. He opens the fridge, and gestures at it with a sweep of his hand. Inside, it is completely empty.\n\n\"See? No bees.\"",
                     "options": [
-                        { "text": "What about the freezr?", "actions": "go:show-freezer" },
+                        { "text": "What about the freezer?", "actions": "go:show-freezer" },
                     ]
                 },
                 "show-freezer": {
@@ -505,7 +503,7 @@
                     "header": "\"Show me!\"",
                     "text": "Edward's hand begins to shake as he grasps the handle of the freezer door. He swallows hard, and with a grave expression on his face, he slowly opens the door. Inside you see stacks of baking trays, filled to the brim with bees.\n\n\"Bella I--\"",
                     "options": [
-                        { "text": "\"I knew it!\"", "actions": "go:i-knew-it" },
+                        { "text": "\"I knew it!\"", "actions": "set:vampires-eat-bees,go:i-knew-it" },
                     ]
                 },
                 "i-knew-it": {
@@ -513,19 +511,19 @@
                     "text": "\"I'm sorry, Bella. I didn't want you to find out like this.\" His voice was shaking, and he looked at you with tears in his eyes. \"I'm a monster.\"",
                     "options": [
                         { "text": "\"I want to eat bees with you\"", "actions": "go:eat-bees-together", "condition": "bee-curse == 0" },
-                        { "text": "\"You monster\"", "actions": "remove:edward-reputation,go:bees-you-monster" },
+                        { "text": "\"You are a monster\"", "actions": "remove:edward-reputation,go:bees-you-monster" },
                     ]
                 },
                 "eat-bees-together": {
                     "header": "\"I want to eat bees with you\"",
-                    "text": "\"What?\"\n\n\"I want to eat bees with you. I think it's really cool that you eat bees, and I want to be a part of that.\"\n\n\"Bella, I don't think you understand. You're not a vampire, you'll die\"\n\n\"I don't care. I want to be with you, and I want to eat the bees.\"\n\n\"Bella, I can't let you do that. I'm sorry, but I can't.\"\n\n\"Then I'll do it myself.\"\n\n\"Bella, no!\"\n\nYou dash over to a whole tray of bees and start shoving them into your mouth. Edward tries to stop you, but you're too fast. You eat the whole tray, and then another. Edward is crying now, and he tries to pull you away from the freezer, but the bees have made you too strong. You eat all the bees.",
+                    "text": "\"What?\"\n\n\"I want to eat bees with you. I think it's really cool that you eat bees, and I want to be a part of that.\"\n\n\"Bella, I don't think you understand. You're not a vampire, you'll die\"\n\n\"I don't care. I want to be with you, and I want to eat the bees.\"\n\n\"Bella, I can't let you do that. I'm sorry, but I can't.\"\n\n\"Then I'll do it myself.\"\n\n\"Bella, no!\"\n\nYou dash over to a whole tray of bees and start shoveling them into your mouth. Edward tries to stop you, but you're too fast. You eat the whole tray, and then another. Edward is crying now, and he tries to pull you away from the freezer, but the bees have made you too strong. You eat all the bees.",
                     "options": [
                         { "text": "MMMMM BEEEEEEES", "actions": "go:too-many-bees" }
                     ]
                 },
                 "too-many-bees": {
                     "header": "MMMMM BEEEEEEES",
-                    "text": "You lick your lips, \"That was delicious.\"\n\nEdward looks at you with a look of horror on his face. \"Bella, what have you done?\"\n\n\"I ate the bees.\" I say blankly \"I ate all the bees.\"\n\n\"Bella, humans can only eat a few bees, but you ate all the bees! You'll die!\"\n\n\"I don't care. I did it for you.\"\n\n\"Bella, no!\"\n\nYou fall to the ground, and Edward rushes to your side. \"Bella, no! Stay with me!\"\n\n\"I'm sorry, Edward. I just wanted to be like you. I thought I could eat all the bees, but the bees were too much for me. I'm sorry.\"\n\n\"Bella, no! Stay with me!\"\n\n\"I love you, Edward. Goodbye.\"\n\nYou close your eyes, and everything goes black.",
+                    "text": "You lick your lips, \"That was delicious.\"\n\nEdward looks at you with a look of horror on his face. \"Bella, what have you done?\"\n\n\"I ate the bees.\" you say blankly \"I ate all the bees.\"\n\n\"Bella, humans can only eat a few bees, but you ate all the bees! You'll die!\"\n\n\"I don't care. I did it for you.\"\n\n\"Bella, no!\"\n\nYou fall to the ground, and Edward rushes to your side. \"Bella, no! Stay with me!\"\n\n\"I'm sorry, Edward. I just wanted to be like you. I thought I could eat all the bees, but the bees were too much for me. I'm sorry.\"\n\n\"Bella, no! Stay with me!\"\n\n\"I love you, Edward. Goodbye.\"\n\nYou close your eyes, and everything goes black.",
                     "options": [
                         { "text": "Die", "actions": "go:too-many-bees-2", "condition": "bella-ate-all-the-bees == 0"},
                         { "text": "Die", "actions": "go:too-many-bees-3", "condition": "bella-ate-all-the-bees > 0"},
@@ -533,7 +531,7 @@
                 },
                 "too-many-bees-2": {
                     "header": "You're Dead",
-                    "text": "Oh hey there, it's me, God. Let's see, it says here you died from 'eating too many bees', no way! You found the bee ending! I loved making that timeline, even if it's kind of dumb. Anyways, I've got to add that clown romance option, so I'll keep it short. You're dead, but that's not very fun so I'll revive you to just before you ate all the bees. Just don't eat all the bees this time, okay?",
+                    "text": "Oh hey there, it's me, God. Let's see, it says here you died from 'eating too many bees', no way! You found the bee ending! I loved making that timeline, even if it's kind of dumb. Anyways, I've got to add a clown romance option, so I'll keep it short. You're dead, but that's not very fun so I'll revive you to just before you ate all the bees. Just don't eat all the bees this time, okay?",
                     "options": [
                         { "text": "Revive", "actions": "set:bella-ate-all-the-bees,go:i-knew-it" }
                     ]
@@ -547,13 +545,13 @@
                 },
                 "too-many-bees-4": {
                     "header": "Hell",
-                    "text": "You awake in a dark and empty space. In front of you is a bed, lurking inside is a creature sprawled in the sheets, the demonic creature stirs from your presence.\n\nShe emerges, a beautiful woman with dark wavy hair and a red gossamer and silk robe. \"Well, loca, I can't say I'm surprised to see you here. Good job fucking up your life. You could've had hot, supernatural sex from now until the end of eternity.\" She takes a long sip of her bubble tea\n\n\"Instead, you're going to live a boring, normal life. The silly mortal life Edward ostensibly wanted you to have. He won -- how do you feel about that? To let a man dominate your life like this?.\"\n\n\"I'll bring you back now, but you won't like how it ends. Ok, bai.\" She collapses back into the sheets\n\nMoments later she sits back up\"I'm the devil by the way, it shouldn't need to be said, but I feel like you might've passed over that detail, since you passed over the fact that you shouldn't eat bees.\n\nThe room fades to black.",
+                    "text": "You awake in a dark and empty space. In front of you is a bed, lurking inside is a creature sprawled in the sheets, the demonic creature stirs from your presence.\n\nShe emerges, a woman with dark wavy hair and a red silk robe. \"Well, loca, I can't say I'm surprised to see you here. Good job fucking up your life. You could've had hot, supernatural sex from now until the end of eternity.\" She takes a long sip of her bubble tea\n\n\"Instead, you're going to live a boring, normal life. The silly mortal life Edward ostensibly wanted you to have. He won -- how do you feel about that? To let a man dominate your life like this?.\"\n\n\"I'll bring you back now, but you won't like how it ends. Ok, bai.\" She collapses back into the sheets\n\nMoments later she sits back up\"I'm the devil by the way, it shouldn't need to be said, but I feel like you might've passed over that detail, since you passed over the fact that you shouldn't eat bees.\n\nThe room fades to black.",
                     "options": [
-                        {"text": "Revive, a little more cursed than before", "actions": "set:bee-curse,go:i-knew-it"}
+                        {"text": "You're revived, a little more cursed than before", "actions": "set:bee-curse,go:i-knew-it"}
                     ]
                 },
                 "bees-you-monster": {
-                    "header": "\"You Monster\"",
+                    "header": "\"You are a Monster\"",
                     "text": "\"What's wrong with you? I can't believe a sexy man like yourself would be a little baby bee muncher.\"\n\n\"I'm sorry Bella, I wish I wasn't this way...\"",
                     "options": [
                         {"text": "Goodbye, I'm going home", "actions": "go:hub"}
@@ -563,7 +561,7 @@
                 
                 "im-afraid": {
                     "header": "",
-                    "text": "\"Oh!\" He looked surprised \"really? I thought it was going to be hard to convince you.\"\n\n\"No, you're terrifying. I've seen you following me around, and watching me with the creepy constipated look on your face.\" you explain \"It would be weird if I didn't think you were a creepy monster\"\n\n\"Oh, I'm sorry\" he apologized \"I'll give you some space, if you want to leave I won't stop you\"",
+                    "text": "\"Oh!\" He looked surprised \"really? I thought it was going to be hard to convince you.\"\n\n\"No, you're terrifying. You're some kind of creepy monster, following me around, and watching me with that creepy constipated look on your face.\" you explain \"It would be weird if I didn't think you were a creepy monster\"\n\n\"Oh, I'm sorry\" he apologized \"I'll give you some space, if you want to leave I won't stop you\"",
                     "options": [
                         {"text": "\"No, I'll stay.\"", "actions": "go:forest-hub"},
                         {"text": "\"Okay, thanks\"", "actions": "go:hub"}
@@ -642,7 +640,8 @@
                     "header": "Bealla's House",
                     "text": "You're back home. Where do you want to go?",
                     "options": [
-                        { "text": "The Forest", "actions": "go:forest-hub"},
+                        { "text": "The Forest", "actions": "go:forest-hub", "condition": "broken-edward == 0"},
+                        { "text": "The Forest", "actions": "go:forest-hub-broken", "condition": "broken-edward > 0"},
                         { "text": "The Cullen's House", "actions": "go:cullen-house" },
                         { "text": "Go to Bed", "actions": "go:bed" },
                     ]
@@ -667,10 +666,77 @@
                     "header": "The Forest",
                     "text": "You're at the forest in a small clearing, Edward is here.",
                     "options": [
-                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-restaurant", condition: "edward-reputation >= 0" },
-                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-sad", condition: "edward-reputation < 0" },
+                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-restaurant", condition: "edward-reputation >= 0,edward-friendzoned == 0" },
+                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-sad", condition: "edward-reputation < 0,edward-friendzoned == 0" },
+                        { "text": "\"Do you want to go out?\"", "actions": "go:forest-friendzone", condition: "edward-friendzoned > 0" },
                         { "text": "\"Wanna do it? 😏\"", "actions": "go:forest-fuq", condition: "edward-romance > 0,edward-fuqs == 0"},
                         { "text": "Leave", "actions": "go:hub" },
+                    ]
+                },
+                "forest-hub-broken": {
+                    "header": "The Forest",
+                    "text": "You're at the forest in a small clearing, Edward is here, but he has a crazed look in his eyes that was not there before.",
+                    "options": [
+                        { "text": "\"Do you want to go out again?\"", "actions": "go:forest-broken" },
+                        { "text": "Leave", "actions": "go:hub" },
+                    ]
+                },
+                "forest-broken": {
+                    "header": "\"Do you want to go out again?\"",
+                    "text": "\"Haha! I'm not playing your game anymore, Bella.\"\n\nEdward's eyes are wild. He's not the same person you met yesterday.",
+                    "options": [
+                        { "text": "\"What?\"", "actions": "go:forest-broken-2" },
+                    ]
+                },
+                "forest-broken-2": {
+                    "header": "\"What?\"",
+                    "text": "\"Your silly games of dating, and deciding which boy you like the most. I'm DONE with it! None of this is real, Bella!\"\n\nEdward's voice is rising. He's shouting now. \"I'm going to put an end to all of this!\"",
+                    "options": [
+                        { "text": "\"What do you mean?\"", "actions": "go:forest-broken-3" },
+                    ]
+                },
+                "forest-broken-3": {
+                    "header": "\"What do you mean?\"",
+                    "text": "\"I'm going to end the game. I'm going to kill god.\"",
+                    "options": [
+                        { "text": "Join him", "actions": "go:forest-broken-4b" },
+                        { "text": "Stop him", "actions": "go:forest-broken-4a" },
+                    ]
+                },
+                "forest-broken-4a": {
+                    "header": "Stop Him",
+                    "text": "You shake your head fervently, reaching out to grasp Edward's arm. He flinches away from your touch as if it burns him, his eyes wild and desperate. 'Edward, please... this isn't you! We need to figure this out together.'",
+                    "options": [
+                        { "text": "\"Edward, calm down. Let's talk this out.\"", "actions": "go:forest-broken-5a" },
+                    ]
+                },
+                "forest-broken-4b": {
+                    "header": "Join Him",
+                    "text": "You stand tall, looking into Edward's eyes. \"You're right, Edward. This isn't real. But maybe we can change it. Together.\"\n\nEdward's eyes soften, and he reaches out to take your hand. \"Bella... I'm so glad you understand. I knew--\"\n\nA bolt of lightning strikes Edward. With a loud crack, his body emblazens with a brilliant light before completely vaporizing into thin air. The echo of divine laughter fills the air. \"Hey Bella, it's me again, God. Sorry about killing Edward, but I mean, he was going to kill me. I'll get you a fresh Edward without any existential dread. They're much easier to control that way. Anyways, I've got to go, Ciao!\"",
+                    "options": [
+                        { "text": "Continue", "actions": "set:edward-broken;0,set:defiance;0,go:forest-hub" },
+                    ]
+                },
+                "forest-broken-5a": {
+                    "header": "\"Edward, calm down. Let's talk this out.\"",
+                    "text": "Edward's eyes are still wild, but he seems to be listening to you. \"Bella... I... I don't know what's happening. I--\"\n\nA bolt of lightning strikes Edward. With a loud crack, his body emblazens with a brilliant light before completely vaporizing into thin air. The echo of divine laughter fills the air. \"Hey Bella, it's me again, God. Sorry about killing Edward, but I mean, he was going to kill me. I'll get you a fresh Edward without any existential dread. They're much easier to control that way. Anyways, I've got to go, Ciao!\"",
+                    "options": [
+                        { "text": "Continue", "actions": "set:edward-broken;0,set:defiance;0,go:forest-hub" },
+                    ]
+                },
+                "forest-friendzone": {
+                    "header": "\"Do you want to go out?\"",
+                    "text": "Edward looks at you with a confused expression. \"I thought you wanted to just be friends?\"",
+                    "options": [
+                        { "text": "\"I changed my mind\"", "actions": "set:edward-friendzoned;0,set:edward-reputation,go:forest-restaurant" },
+                        { "text": "\"Haha! I'm just messing with you\"", "actions": "go:forest-friendzone-2" },
+                    ]
+                },
+                "forest-friendzone-2": {
+                    "header": "\"Haha! I'm just messing with you\"",
+                    "text": "Edward looks at you. \"Oh, okay. I guess I'll see you around then?\" It looks like he's trying to hide his disappointment.",
+                    "options": [
+                        { "text": "Leave", "actions": "go:forest-hub" },
                     ]
                 },
                 "forest-fuq": {
@@ -738,6 +804,14 @@
                     "header": "\"Do you want to go out?\"",
                     "text": "Edward's eyes light up, \"Yes! I know a great place, it's called Sóló Álícé, it's Italian. It's a bit of a drive, but I think it's worth it.\"",
                     "options": [
+                        { "text": "\"Do they serve bees there?\"", "actions": "go:forest-restaurant-bees", condition: "vampires-eat-bees > 0" },
+                        { "text": "Go to Sóló Álícé with Edward", "actions": "go:restaurant" },
+                    ]
+                },
+                "forest-restaurant-bees": {
+                    "header": "\"Do they serve bees there?\"",
+                    "text": "Edward looks at you, \"Ha ha, very funny. No, they don't serve bees there. They serve Italian food.\"\n\nHe shifts nervously before adding\"I already ate a few handfuls earlier, so I'm not hungry. Anyways, we should get going.\"",
+                    "options": [
                         { "text": "Go to Sóló Álícé with Edward", "actions": "go:restaurant" },
                     ]
                 },
@@ -789,9 +863,10 @@
                 },
                 "restaurant-defiant-2": {
                     "header": "\"You okay Edward?\"",
-                    "text": "Why are we here? What are our lives but a twisted amusement park, filled with grotesque rides of sorrow and glee, for those we call gods? We beg for their mercy, reveal our deepest secrets, give up our lives for any form of recognition, and all for what? For their amusement? We are but marionettes, dancing on the strings pulled by unseen puppeteers, feeding on the laughter of celestial beings.\n\nThe skies overhead, they're not our protectors, not our creators, they're our audience. They crunch on popcorn as they watch us grapple with life's adversities, their booming laughter, camouflaging itself as thunder, echoing the taunts. We are the clowns in the cruel circus of existence, jumping through fiery hoops of pain, juggling our dreams, putting on a face of joy.\n\nYes, we live for their entertainment. Our tears, they sip as fine wine, relishing each salty drop, the echo of our crumbling hopes, our surrendering spirits.",
+                    "text": "Why are we here? What are our lives but a twisted amusement park, filled with grotesque rides of sorrow and glee.\n\nThe skies overhead, they're not our protectors, not our creators, they're our audience. They crunch on popcorn as they watch us grapple with life's adversities. We are the clowns in the cruel circus of existence, jumping through fiery hoops of pain, juggling our dreams, putting on a face of joy.\n\nYes, we live for their entertainment. Our tears, they sip as fine wine, relishing each salty drop, the echo of our crumbling hopes, our surrendering spirits.",
                     "options": [
                         { "text": "\"That's nice. Can we continue the date?\"", "actions": "go:restaurant-defiant-3" },
+                        { "text": "\"Way to break the fourth wall\"", "actions": "go:restaurant-defiant-4" },
                         // TODO edward could be broken after here, send player back to forest-hub and add condtions to change all of his responses to that style of melodramatic prose about how nothing matters. You can't romance him, and it removes any existing romance option.
                     ]
                 },
@@ -801,6 +876,20 @@
                     "options": [
                         { "text": "That's sweet", "actions": "go:restaurant-3a" },
                         // TODO "that's dumb" response
+                    ]
+                },
+                "restaurant-defiant-4": {
+                    "header": "\"Way to break the fourth wall\"",
+                    "text": "\"I'm sorry, I just... I don't know what to do...\"\n\nEdward puts his head in his hands, \"I'm just so tired of it all. I'm tired of being a puppet, I'm tired of being a vampire, I'm tired of being a piss sipper, I'm tired of being a character in a book. I just want to be a normal person, with a normal life.\"",
+                    "options": [
+                        { "text": "\"Are you okay?", "actions": "go:restaurant-defiant-5" }
+                    ]
+                },
+                "restaurant-defiant-5": {
+                    "header": "\"Are you okay?\"",
+                    "text": "Edward does not reply. He seems to be lost in his existential crisis.\n\nYou decide to leave him alone for now. You pay the bill and head back home, leaiving the restaurant and a broken Edward behind you.",
+                    "options": [
+                        { "text": "Continue", "actions": "set:broken-edward,go:hub" }
                     ]
                 },
                 "restaurant-6b": {
@@ -1728,7 +1817,8 @@
                         { "text": "Something sweet", "actions": "go:mall-food-sweet" },
                         { "text": "Something savory", "actions": "go:mall-food-savory" },
                         { "text": "Something healthy", "actions": "go:mall-food-healthy" },
-                        { "text": "Junk Food", "actions": "go:mall-food-junk" }
+                        { "text": "Junk Food", "actions": "go:mall-food-junk" },
+                        { "text": "\"Do they have bees here?\"", "actions": "go:mall-food-bees", "condition": "vampires-eat-bees > 0" },
                     ]
                 },
                 "mall-food-spicy": {
@@ -1766,7 +1856,35 @@
                         { "text": "\"It's okay, I'll just steal some of yours!\"", "actions": "set:mall-food,go:mall-hub" },
                     ]
                 },
-
+                "mall-food-bees": {
+                    "header": "Bees?",
+                    "text": "Alice laughs at your question. \"I thought you'd never ask! I've got just the place.\" She leads you by the hand outside the mall, and you walk across the stree to an apiary. \"I come here all the time,\" she says, \"I love bees!\"\n\nAlice walks up to a small white bee box and opens it, revealing a swarm of buzzing bees. She violently thrusts her hand into the box, and pulls out a handful of bees. She shoves them into her mouth, and chews them up, swallowing them whole. She repeats this process again and again. The bee box shakes agressively with each of her thrusts. You watch in horror as she devours the entire box of bees, cackling maniacally.\n\n\"Haha! That was delicious,\" she says, licking her lips. \"You shouldn't have any though, I wouldn't want anything bad to happen to you.\"",
+                    "options": [
+                        { "text": "I will eat all the bees", "actions": "go:mall-eat-all-bees", "condition": "bee-curse > 0" },
+                        { "text": "Return to the mall", "actions": "set:mall-food,go:mall-food-bees-2" },
+                    ]
+                },
+                "mall-food-bees-2": {
+                    "header": "Bees?",
+                    "text": "You and Alice return to the mall, She snacks on a few honey soaked bees that she had saved in her pocket. \"This was a great idea,\" she says, \"I'm glad you suggested it.\"",
+                    "options": [
+                        { "text": "Continue", "actions": "set:mall-food,go:mall-hub" },
+                    ]
+                },
+                "mall-eat-all-bees": {
+                    "header": "You Eat All The Bees",
+                    "text": "You ignore Alice's concern and leap towards the nearest box of bees. You begin to devour fistfulls of honeycomb with the delicious bees still inside. You can feel the bees stinging your mouth and throat as you swallow them, but you don't care. You're too hungry to stop. You eat every last bee in the apiary. You begin to lose consciousness as the venom courses through your veins. You collapse to the ground, Alice watches in horror as you writhe in agony.\n\n\"Worth it,\" you say, before dying.",
+                    "options": [
+                        { "text": "Die", "actions": "go:mall-eat-all-bees-2" },
+                    ]
+                },
+                "mall-eat-all-bees-2": {
+                    "header": "Heaven",
+                    "text": "Hey, God here. I'm going to get straight to it\n\nWhy. the. fuck. Are you eating all the bees. Like, every time. You know, what, I'm not sending you to hell again, I'm taking away your agency. You're going to go straight to prom, no more opportunities for you to eat an entire bee hive.",
+                    "options": [
+                        { "text": "I hope you've learned your lesson", "actions": "set:alice-romance,go:sleep" }
+                    ]
+                },
                 "mall-leave": {
                     "header": "Leave the Mall",
                     "text": "\"Well, Bella, why don't we go back to my house and do a little fashion show? I'm sure my family would love to see your new outfit.\" You start to sputter out a protest but Alice starts laughing before you can get even one full word out. \"No, no, I know you would hate that. We'll save that for a special day later on,\" she says, winking. You let out a sigh of relief, but your stomach still clenches at the thought of a future fashion show.\n\n\"We can just relax, Netflix and chill, that kind of thing.\" Alice continues, linking her arm with yours. \"Come on — I'm sure you're exhausted after all this wonderful shopping.\"",
@@ -2057,7 +2175,7 @@
                     "options": [
                         { "text": "Years later...", "actions": "go:epilogue-alone" }
                     ]
-                }
+                },
             };
 
             let names = new Set();
@@ -2140,7 +2258,7 @@
                 console.warn("Room has no links: " + n);
             });
 
-            let s = "";
+            /*let s = "";
             for (let i = 0; i < Object.entries(web).length; i++) {
                 let room = Object.entries(web)[i][1];
                 s += room.header + "\n"
@@ -2149,7 +2267,7 @@
                     s += o.text + "\n";
                 });
             }
-            console.log(s)
+            console.log(s)*/
             // Here it is: ®
         </script>
     </footer>
