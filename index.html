@@ -295,11 +295,12 @@
             }
 
             function setState(newState) {
-                //updateText();
                 console.log("2")
                 if (newState != state) {
                     state = newState;
                     fadeOut();
+                } else {
+                    updateText();
                 }
                 console.log("4")
                 save("auto");
